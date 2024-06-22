@@ -14,6 +14,8 @@ FetchContent_MakeAvailable(SFML)
 # TODO: glob?
 add_executable(Supertris
 	src/main.cpp
+	src/renderer.cpp
+	src/renderer.h
 )
 target_link_libraries(Supertris PRIVATE sfml-graphics)
 target_compile_features(Supertris PRIVATE cxx_std_17)
