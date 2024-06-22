@@ -1,10 +1,15 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <set>
 
+#include "constants.h"
+#include "utils.h"
+#include "board.h"
+#include "piece.h"
 #include "renderer.h"
 
 /* TODO:
-	- build not working on Linux?
+	- build not working on Linux or Mac?
 	- implement the whole game
 	- other?
 */
@@ -17,20 +22,72 @@ int main() {
 
 	// Create game objects
 	Renderer renderer(window);
+	Board board;
+	Piece piece;
+	std::set<sf::Keyboard::Scan::Scancode> keysPressed;
+
+	// DEBUG: set stuff on the board for visibility
+	board.debug_putCell(0, 19, Block::L);
+	board.debug_putCell(1, 19, Block::J);
+	board.debug_putCell(0, 18, Block::O);
+	board.debug_putCell(0, 17, Block::O);
 
 	// Main game loop
 	while (window.isOpen()) {
 		// Poll events
 		for (auto event = sf::Event{}; window.pollEvent(event);) {
-			if (event.type == sf::Event::Closed) {
+			switch (event.type) {
+			case sf::Event::Closed:
 				// Close window
 				window.close();
+				break;
+			case sf::Event::KeyPressed:
+				// Key pressed
+				keysPressed.insert(event.key.scancode);
+				break;
+			case sf::Event::KeyReleased:
+				// Key released
+				keysPressed.erase(event.key.scancode);
+				break;
 			}
 		}
+		// TODO: more updates (falling)
 		// TODO: input
-		// TODO: update
+		if (keysPressed.find(sf::Keyboard::Scan::A) != keysPressed.end()) {
+			// Left
+			keysPressed.erase(sf::Keyboard::Scan::A);
+			piece.move(-1, 0, board);
+			// TODO: DAS/ARR/etc.
+		}
+		if (keysPressed.find(sf::Keyboard::Scan::D) != keysPressed.end()) {
+			// Right
+			keysPressed.erase(sf::Keyboard::Scan::D);
+			piece.move(1, 0, board);
+		}
+		if (keysPressed.find(sf::Keyboard::Scan::W) != keysPressed.end()) {
+			// Soft drop
+			keysPressed.erase(sf::Keyboard::Scan::W);
+			bool shouldLock = piece.move(0, 1, board);
+			if (shouldLock) {
+				// TODO: Lock and reset
+				board.lockPiece(piece);
+				piece.respawn(Block::T);
+			}
+		}
+		if (keysPressed.find(sf::Keyboard::Scan::S) != keysPressed.end()) {
+			// Hard drop
+			keysPressed.erase(sf::Keyboard::Scan::S);
+			for (int i = 0; i < 20; i++) {
+				piece.move(0, 1, board);
+			}
+			// TODO: Lock and reset
+			board.lockPiece(piece);
+			piece.respawn(Block::T);
+		}
+		// TODO: rotation
+		// TODO: more updates (falling)
 		// Render
-		renderer.renderGame();
+		renderer.renderGame(board, piece);
 	}
 	return 0;
 }
