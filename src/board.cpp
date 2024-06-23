@@ -1,6 +1,6 @@
 #include "board.h"
 
-void Board::resetBoard() {
+void Board::reset() {
 	board.clear();
 	for (int y = 0; y < height; y++) {
 		board.push_back({});
@@ -13,7 +13,7 @@ void Board::resetBoard() {
 Board::Board() {
 	width = INITIAL_BOARD_WIDTH;
 	height = INITIAL_BOARD_HEIGHT;
-	resetBoard();
+	reset();
 }
 
 int Board::getWidth() {

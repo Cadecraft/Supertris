@@ -18,7 +18,7 @@ private:
 	Block blockMap[PIECE_SIZE][PIECE_SIZE];
 
 public:
-	Piece();
+	Piece(Block blockInitial);
 
 	// Return whether the piece is in a valid position
 	bool isValid(Board& board);

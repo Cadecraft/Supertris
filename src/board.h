@@ -15,9 +15,6 @@ private:
 	int height;
 	std::vector<std::vector<Block>> board;
 
-	// Reset the board based on the width and height
-	void resetBoard();
-
 public:
 	// Create a new board
 	Board();
@@ -32,4 +29,6 @@ public:
 	void debug_putCell(int x, int y, Block toPut);
 	// Lock a piece and return the number of rows cleared
 	int lockPiece(Piece& piece);
+	// Reset the board based on the width and height
+	void reset();
 };

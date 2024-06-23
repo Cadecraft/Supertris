@@ -7,15 +7,17 @@
 #include "board.h"
 #include "piece.h"
 #include "renderer.h"
+#include "bag.h"
 
 /* TODO:
-	- build not working on Linux or Mac?
+	- does build work on Linux or Mac?
 	- implement the whole game
 	- other?
 */
 
 // Entry point
 int main() {
+	// TODO: save window position, allow resizing in the menu
 	auto window = sf::RenderWindow{ { 300u, 600u }, "Supertris" };
 	// TODO: better framerate limit ?
 	window.setFramerateLimit(144);
@@ -23,14 +25,10 @@ int main() {
 	// Create game objects
 	Renderer renderer(window);
 	Board board;
-	Piece piece;
+	Bag bag;
+	Piece piece(bag.popNextPiece());
+	// TODO: refactor keyboard into a separate input class
 	std::set<sf::Keyboard::Scan::Scancode> keysPressed;
-
-	// DEBUG: set stuff on the board for visibility
-	board.debug_putCell(0, 19, Block::L);
-	board.debug_putCell(1, 19, Block::J);
-	board.debug_putCell(0, 18, Block::O);
-	board.debug_putCell(0, 17, Block::O);
 
 	// Main game loop
 	while (window.isOpen()) {
@@ -62,7 +60,18 @@ int main() {
 		if (keysPressed.find(sf::Keyboard::Scan::D) != keysPressed.end()) {
 			// Right
 			keysPressed.erase(sf::Keyboard::Scan::D);
-			piece.move(1, 0, board);
+			piece.move(true, 0, board);
+		}
+		if (keysPressed.find(sf::Keyboard::Scan::H) != keysPressed.end()) {
+			// Rotate left
+			keysPressed.erase(sf::Keyboard::Scan::H);
+			piece.rotate(false, board);
+			// TODO: DAS/ARR/etc.
+		}
+		if (keysPressed.find(sf::Keyboard::Scan::L) != keysPressed.end()) {
+			// Rotate right
+			keysPressed.erase(sf::Keyboard::Scan::L);
+			piece.rotate(1, board);
 		}
 		if (keysPressed.find(sf::Keyboard::Scan::W) != keysPressed.end()) {
 			// Soft drop
@@ -71,7 +80,7 @@ int main() {
 			if (shouldLock) {
 				// TODO: Lock and reset
 				board.lockPiece(piece);
-				piece.respawn(Block::T);
+				piece.respawn(bag.popNextPiece());
 			}
 		}
 		if (keysPressed.find(sf::Keyboard::Scan::S) != keysPressed.end()) {
@@ -82,8 +91,15 @@ int main() {
 			}
 			// TODO: Lock and reset
 			board.lockPiece(piece);
-			piece.respawn(Block::T);
+			piece.respawn(bag.popNextPiece());
 		}
+		if (keysPressed.find(sf::Keyboard::Scan::R) != keysPressed.end()) {
+			// Restart
+			keysPressed.erase(sf::Keyboard::Scan::R);
+			board.reset();
+			// TODO: also reset bag, piece, etc.
+		}
+
 		// TODO: rotation
 		// TODO: more updates (falling)
 		// Render

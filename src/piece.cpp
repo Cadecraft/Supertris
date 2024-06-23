@@ -1,8 +1,8 @@
 #include "piece.h"
 
-Piece::Piece() {
+Piece::Piece(Block blockInitial) {
 	// TODO: randomize the piece type to start
-	respawn(Block::Z);
+	respawn(blockInitial);
 }
 
 bool Piece::isValid(Board& board) {

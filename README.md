@@ -4,7 +4,15 @@ A cross-platform super stacker game inspired by Tetris!
 
 Written in C++ using the SFML library.
 
-This project is far from complete, and is currently just a concept.
+## Project Goals
+
+This project is far from complete, and is currently mostly a concept.
+
+- Build a fully-featured, mostly Tetris-guideline-compatible stacker game
+- Allow configurations for advanced gameplay (DAS, ARR, etc.)
+- Extend this game with more modes, larger boards, special features, etc.
+- Add graphical effects while focusing on high performance
+- Allow to be built and played cross-platform
 
 ## Building
 
