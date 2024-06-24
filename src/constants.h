@@ -5,13 +5,18 @@
 // Constants for the game
 
 // System constants
-const std::string RECENT_VERSION = "0.1.0";
-const std::string EDIT_DATE = "2024/06/22";
+const std::string RECENT_VERSION = "0.2.0";
+const std::string EDIT_DATE = "2024/06/23";
+
+// Rendering constants
+const unsigned int DEFAULT_WINDOW_WIDTH = 300; // 300
+const unsigned int DEFAULT_WINDOW_HEIGHT = 600; // 600
+const bool RENDER_EDGES = false; // false
 
 // Game constants
-const int INITIAL_BOARD_WIDTH = 10;
-const int INITIAL_BOARD_HEIGHT = 20;
-const int PIECE_SIZE = 4;
+const int INITIAL_BOARD_WIDTH = 10; // 10
+const int INITIAL_BOARD_HEIGHT = 20; // 20
+const int PIECE_SIZE = 4; // 4
 
 // Piece data
 const int PIECE_DATA[7][4][PIECE_SIZE][PIECE_SIZE] = {

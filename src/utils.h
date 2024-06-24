@@ -94,3 +94,8 @@ inline Color blockToColor(Block block) {
 		return { 0, 0, 0 };
 	}
 }
+
+// Multiply a color by a decimal
+inline Color multColor(Color color, double alpha) {
+	return { (int) (color.r * alpha), (int) (color.g * alpha), (int) (color.b * alpha) };
+}

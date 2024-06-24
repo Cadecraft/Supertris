@@ -22,6 +22,9 @@ add_executable(Supertris
 	src/piece.cpp
 	src/constants.h
 	src/utils.h
+	src/bag.h
+	src/inputhandler.h
+	src/score.h
 )
 target_link_libraries(Supertris PRIVATE sfml-graphics)
 target_compile_features(Supertris PRIVATE cxx_std_17)

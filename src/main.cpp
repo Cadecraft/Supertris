@@ -1,6 +1,5 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
-#include <set>
 
 #include "constants.h"
 #include "utils.h"
@@ -8,17 +7,20 @@
 #include "piece.h"
 #include "renderer.h"
 #include "bag.h"
+#include "inputhandler.h"
 
 /* TODO:
 	- does build work on Linux or Mac?
-	- implement the whole game
+	- implement the whole game: clearing lines, score and points, tspins
+	- smarter rotation checking/locking
+	- input refactor: only allow one rotation, store key press/release without deleting, arr/das, etc.
 	- other?
 */
 
 // Entry point
 int main() {
 	// TODO: save window position, allow resizing in the menu
-	auto window = sf::RenderWindow{ { 300u, 600u }, "Supertris" };
+	auto window = sf::RenderWindow{ { DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT }, "Supertris" };
 	// TODO: better framerate limit ?
 	window.setFramerateLimit(144);
 
@@ -27,8 +29,8 @@ int main() {
 	Board board;
 	Bag bag;
 	Piece piece(bag.popNextPiece());
-	// TODO: refactor keyboard into a separate input class
-	std::set<sf::Keyboard::Scan::Scancode> keysPressed;
+	InputHandler inputHandler;
+	// TODO: timing (calculate ms elapsed better) !
 
 	// Main game loop
 	while (window.isOpen()) {
@@ -41,66 +43,75 @@ int main() {
 				break;
 			case sf::Event::KeyPressed:
 				// Key pressed
-				keysPressed.insert(event.key.scancode);
+				inputHandler.press(event.key.scancode);
 				break;
 			case sf::Event::KeyReleased:
 				// Key released
-				keysPressed.erase(event.key.scancode);
+				inputHandler.release(event.key.scancode);
 				break;
 			}
 		}
 		// TODO: more updates (falling)
-		// TODO: input
-		if (keysPressed.find(sf::Keyboard::Scan::A) != keysPressed.end()) {
+		// Update input
+		int msElapsed = 10; // TODO: calibrate with clock
+		inputHandler.updateCooldowns(msElapsed);
+		// Process input
+		if (inputHandler.isActive(sf::Keyboard::Scan::A)) {
 			// Left
-			keysPressed.erase(sf::Keyboard::Scan::A);
+			// TODO: issue pressing both left and right at the same time (prioritize whichever was pressed latest)
+			if (inputHandler.inCooldownData(sf::Keyboard::Scan::A)) {
+				inputHandler.addToCooldown(sf::Keyboard::Scan::A, 20); // TODO: ARR
+			} else {
+				inputHandler.addToCooldown(sf::Keyboard::Scan::A, 140); // TODO: DAS
+			}
 			piece.move(-1, 0, board);
-			// TODO: DAS/ARR/etc.
 		}
-		if (keysPressed.find(sf::Keyboard::Scan::D) != keysPressed.end()) {
+		if (inputHandler.isActive(sf::Keyboard::Scan::D)) {
 			// Right
-			keysPressed.erase(sf::Keyboard::Scan::D);
-			piece.move(true, 0, board);
+			if (inputHandler.inCooldownData(sf::Keyboard::Scan::D)) {
+				inputHandler.addToCooldown(sf::Keyboard::Scan::D, 20); // TODO: ARR
+			} else {
+				inputHandler.addToCooldown(sf::Keyboard::Scan::D, 140); // TODO: DAS
+			}
+			piece.move(1, 0, board);
 		}
-		if (keysPressed.find(sf::Keyboard::Scan::H) != keysPressed.end()) {
+		if (inputHandler.isActive(sf::Keyboard::Scan::H)) {
 			// Rotate left
-			keysPressed.erase(sf::Keyboard::Scan::H);
+			inputHandler.addToCooldown(sf::Keyboard::Scan::H);
 			piece.rotate(false, board);
-			// TODO: DAS/ARR/etc.
 		}
-		if (keysPressed.find(sf::Keyboard::Scan::L) != keysPressed.end()) {
+		if (inputHandler.isActive(sf::Keyboard::Scan::L)) {
 			// Rotate right
-			keysPressed.erase(sf::Keyboard::Scan::L);
-			piece.rotate(1, board);
+			inputHandler.addToCooldown(sf::Keyboard::Scan::L);
+			piece.rotate(true, board);
 		}
-		if (keysPressed.find(sf::Keyboard::Scan::W) != keysPressed.end()) {
+		if (inputHandler.isActive(sf::Keyboard::Scan::W)) {
 			// Soft drop
-			keysPressed.erase(sf::Keyboard::Scan::W);
+			inputHandler.addToCooldown(sf::Keyboard::Scan::W, 40); // TODO: refactor into SDF
 			bool shouldLock = piece.move(0, 1, board);
 			if (shouldLock) {
 				// TODO: Lock and reset
-				board.lockPiece(piece);
+				int cleared = board.lockPiece(piece);
 				piece.respawn(bag.popNextPiece());
 			}
 		}
-		if (keysPressed.find(sf::Keyboard::Scan::S) != keysPressed.end()) {
+		if (inputHandler.isActive(sf::Keyboard::Scan::S)) {
 			// Hard drop
-			keysPressed.erase(sf::Keyboard::Scan::S);
+			inputHandler.addToCooldown(sf::Keyboard::Scan::S);
 			for (int i = 0; i < 20; i++) {
 				piece.move(0, 1, board);
 			}
 			// TODO: Lock and reset
-			board.lockPiece(piece);
+			int cleared = board.lockPiece(piece);
 			piece.respawn(bag.popNextPiece());
 		}
-		if (keysPressed.find(sf::Keyboard::Scan::R) != keysPressed.end()) {
+		if (inputHandler.isActive(sf::Keyboard::Scan::R)) {
 			// Restart
-			keysPressed.erase(sf::Keyboard::Scan::R);
+			inputHandler.addToCooldown(sf::Keyboard::Scan::R);
 			board.reset();
 			// TODO: also reset bag, piece, etc.
 		}
 
-		// TODO: rotation
 		// TODO: more updates (falling)
 		// Render
 		renderer.renderGame(board, piece);

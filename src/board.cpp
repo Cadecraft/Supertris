@@ -55,6 +55,21 @@ int Board::lockPiece(Piece& piece) {
 		}
 	}
 	int rowsCleared = 0;
-	// TODO: row clearing and count
+	// Row clearing and count
+	for (int y = 0; y < height; y++) {
+		bool isRowClear = true;
+		for (int x = 0; x < width; x++) {
+			if (board[y][x] == Block::None) isRowClear = false;
+		}
+		if (isRowClear) {
+			// Clear row: shift rows above it down and update
+			for (int i = y; i >= 1; i--) {
+				for (int x = 0; x < width; x++) {
+					board[i][x] = board[i - 1][x];
+				}
+			}
+			rowsCleared++;
+		}
+	}
 	return rowsCleared;
 }

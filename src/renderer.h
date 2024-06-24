@@ -17,6 +17,9 @@ public:
 	// Create the renderer
 	Renderer(sf::RenderWindow& window);
 
+	// Render a rectangle onto the screen
+	void renderRect(int x, int y, int width, int height, Color color);
+
 	// Render the entire screen
 	void renderGame(Board& board, Piece& piece);
 };
