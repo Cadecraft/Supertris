@@ -1,5 +1,8 @@
 #pragma once
 
+#include <chrono>
+#include <cstdint>
+
 // Stores a color value
 struct Color {
 	int r;
@@ -16,7 +19,8 @@ enum class Block {
 	O,
 	L,
 	J,
-	I
+	I,
+	Shadow
 };
 
 // Convert a block to its number for indexing into `constants`; return -1 if invalid
@@ -89,6 +93,9 @@ inline Color blockToColor(Block block) {
 	case Block::I:
 		// Cyan
 		return { 37, 184, 217 };
+	case Block::Shadow:
+		// Shadow
+		return { 34, 39, 61 };
 	default:
 		// None (should not happen)
 		return { 0, 0, 0 };
@@ -98,4 +105,15 @@ inline Color blockToColor(Block block) {
 // Multiply a color by a decimal
 inline Color multColor(Color color, double alpha) {
 	return { (int) (color.r * alpha), (int) (color.g * alpha), (int) (color.b * alpha) };
+}
+
+// Lerp color with white (full alpha = full original color)
+inline Color lerpWhiteColor(Color color, double alpha) {
+	return { (int) (color.r * alpha + 255 * (1.0 - alpha)), (int) (color.g * alpha + 255 * (1.0 - alpha)), (int) (color.b * alpha + 255 * (1.0 - alpha)) };
+}
+
+// Get the current time in milliseconds
+inline uint64_t currentTimeMs() {
+	using namespace std::chrono;
+	return duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
 }

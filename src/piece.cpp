@@ -41,14 +41,17 @@ bool Piece::move(int deltax, int deltay, Board& board) {
 	return false;
 }
 
-void Piece::rotate(bool clockwise, Board& board) {
+void Piece::rotate(int direction, Board& board) {
 	int orig = rotationFrame;
-	if (clockwise) {
+	if (direction == 1) {
 		rotationFrame++;
 		if (rotationFrame >= 4) rotationFrame = 0;
-	} else {
+	} else if (direction == -1) {
 		rotationFrame--;
 		if (rotationFrame < 0) rotationFrame = 3;
+	} else {
+		rotationFrame += 2;
+		if (rotationFrame >= 4) rotationFrame -= 4;
 	}
 	updateBlockMap();
 	if (!isValid(board)) {

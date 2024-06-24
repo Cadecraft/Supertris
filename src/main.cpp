@@ -31,6 +31,7 @@ int main() {
 	Piece piece(bag.popNextPiece());
 	InputHandler inputHandler;
 	// TODO: timing (calculate ms elapsed better) !
+	uint64_t previousTime = currentTimeMs();
 
 	// Main game loop
 	while (window.isOpen()) {
@@ -51,39 +52,47 @@ int main() {
 				break;
 			}
 		}
+		// Get the number of millseconds elapsed
+		int msElapsed = currentTimeMs() - previousTime; // TODO: check clock calibration
+		previousTime = currentTimeMs();
+		int frameRate = 1000.0 / msElapsed;
+		std::cout << frameRate << " FPS" << std::endl;
 		// TODO: more updates (falling)
 		// Update input
-		int msElapsed = 10; // TODO: calibrate with clock
 		inputHandler.updateCooldowns(msElapsed);
 		// Process input
-		if (inputHandler.isActive(sf::Keyboard::Scan::A)) {
+		if (inputHandler.isActive(sf::Keyboard::Scan::A) && !inputHandler.inCooldownData(sf::Keyboard::Scan::D)) {
 			// Left
 			// TODO: issue pressing both left and right at the same time (prioritize whichever was pressed latest)
 			if (inputHandler.inCooldownData(sf::Keyboard::Scan::A)) {
-				inputHandler.addToCooldown(sf::Keyboard::Scan::A, 20); // TODO: ARR
+				inputHandler.addToCooldown(sf::Keyboard::Scan::A, 5); // TODO: ARR
 			} else {
-				inputHandler.addToCooldown(sf::Keyboard::Scan::A, 140); // TODO: DAS
+				inputHandler.addToCooldown(sf::Keyboard::Scan::A, 120); // TODO: DAS
 			}
 			piece.move(-1, 0, board);
-		}
-		if (inputHandler.isActive(sf::Keyboard::Scan::D)) {
+		} else if (inputHandler.isActive(sf::Keyboard::Scan::D) && !inputHandler.inCooldownData(sf::Keyboard::Scan::A)) {
 			// Right
 			if (inputHandler.inCooldownData(sf::Keyboard::Scan::D)) {
-				inputHandler.addToCooldown(sf::Keyboard::Scan::D, 20); // TODO: ARR
+				inputHandler.addToCooldown(sf::Keyboard::Scan::D, 5); // TODO: ARR
 			} else {
-				inputHandler.addToCooldown(sf::Keyboard::Scan::D, 140); // TODO: DAS
+				inputHandler.addToCooldown(sf::Keyboard::Scan::D, 120); // TODO: DAS
 			}
 			piece.move(1, 0, board);
 		}
-		if (inputHandler.isActive(sf::Keyboard::Scan::H)) {
+		if (inputHandler.isActive(sf::Keyboard::Scan::Left)) {
 			// Rotate left
-			inputHandler.addToCooldown(sf::Keyboard::Scan::H);
-			piece.rotate(false, board);
+			inputHandler.addToCooldown(sf::Keyboard::Scan::Left);
+			piece.rotate(-1, board);
 		}
-		if (inputHandler.isActive(sf::Keyboard::Scan::L)) {
+		if (inputHandler.isActive(sf::Keyboard::Scan::Right)) {
 			// Rotate right
-			inputHandler.addToCooldown(sf::Keyboard::Scan::L);
-			piece.rotate(true, board);
+			inputHandler.addToCooldown(sf::Keyboard::Scan::Right);
+			piece.rotate(1, board);
+		}
+		if (inputHandler.isActive(sf::Keyboard::Scan::Up)) {
+			// Rotate 180 degrees
+			inputHandler.addToCooldown(sf::Keyboard::Scan::Up);
+			piece.rotate(2, board);
 		}
 		if (inputHandler.isActive(sf::Keyboard::Scan::W)) {
 			// Soft drop
