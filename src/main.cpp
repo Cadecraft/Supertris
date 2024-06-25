@@ -65,17 +65,18 @@ int main() {
 			// Left
 			// TODO: issue pressing both left and right at the same time (prioritize whichever was pressed latest)
 			if (inputHandler.inCooldownData(sf::Keyboard::Scan::A)) {
-				inputHandler.addToCooldown(sf::Keyboard::Scan::A, 5); // TODO: ARR
+				inputHandler.addToCooldown(sf::Keyboard::Scan::A, 2); // TODO: ARR ("infinite" should just for(10))
 			} else {
-				inputHandler.addToCooldown(sf::Keyboard::Scan::A, 120); // TODO: DAS
+				inputHandler.addToCooldown(sf::Keyboard::Scan::A, 140); // TODO: DAS
 			}
 			piece.move(-1, 0, board);
-		} else if (inputHandler.isActive(sf::Keyboard::Scan::D) && !inputHandler.inCooldownData(sf::Keyboard::Scan::A)) {
+		}
+		if (inputHandler.isActive(sf::Keyboard::Scan::D) && !inputHandler.inCooldownData(sf::Keyboard::Scan::A)) {
 			// Right
 			if (inputHandler.inCooldownData(sf::Keyboard::Scan::D)) {
-				inputHandler.addToCooldown(sf::Keyboard::Scan::D, 5); // TODO: ARR
+				inputHandler.addToCooldown(sf::Keyboard::Scan::D, 2); // TODO: ARR
 			} else {
-				inputHandler.addToCooldown(sf::Keyboard::Scan::D, 120); // TODO: DAS
+				inputHandler.addToCooldown(sf::Keyboard::Scan::D, 140); // TODO: DAS
 			}
 			piece.move(1, 0, board);
 		}
@@ -96,12 +97,15 @@ int main() {
 		}
 		if (inputHandler.isActive(sf::Keyboard::Scan::W)) {
 			// Soft drop
-			inputHandler.addToCooldown(sf::Keyboard::Scan::W, 40); // TODO: refactor into SDF
+			inputHandler.addToCooldown(sf::Keyboard::Scan::W, 10); // TODO: refactor into SDF
 			bool shouldLock = piece.move(0, 1, board);
+			shouldLock = false; // TODO: only lock if enough time has elapsed since the piece first hit the bottom
+			// TODO: non-locking for a cooldown second if staying in the same spot
 			if (shouldLock) {
-				// TODO: Lock and reset
+				// Lock and reset
 				int cleared = board.lockPiece(piece);
 				piece.respawn(bag.popNextPiece());
+				// TODO: scoring
 			}
 		}
 		if (inputHandler.isActive(sf::Keyboard::Scan::S)) {
@@ -110,9 +114,10 @@ int main() {
 			for (int i = 0; i < 20; i++) {
 				piece.move(0, 1, board);
 			}
-			// TODO: Lock and reset
+			// Lock and reset
 			int cleared = board.lockPiece(piece);
 			piece.respawn(bag.popNextPiece());
+			// TODO: scoring
 		}
 		if (inputHandler.isActive(sf::Keyboard::Scan::R)) {
 			// Restart
@@ -123,7 +128,7 @@ int main() {
 
 		// TODO: more updates (falling)
 		// Render
-		renderer.renderGame(board, piece);
+		renderer.renderGame(board, piece, bag);
 	}
 	return 0;
 }

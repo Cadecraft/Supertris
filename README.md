@@ -4,6 +4,9 @@ A cross-platform super stacker game inspired by Tetris!
 
 Written in C++ using the SFML library.
 
+<!-- TODO: screenshot -->
+<!-- TODO: controls and config info -->
+
 ## Project Goals
 
 This project is far from complete, and is currently mostly a concept.

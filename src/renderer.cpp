@@ -13,7 +13,7 @@ void Renderer::renderRect(int x, int y, int width, int height, Color color) {
 	window.draw(toRender);
 }
 
-void Renderer::renderGame(Board& board, Piece& piece) {
+void Renderer::renderGame(Board& board, Piece& piece, Bag& bag) {
 	// Calculate the shadow piece
 	Piece shadow(piece);
 	for (int i = 0; i < 20; i++) {
@@ -68,7 +68,26 @@ void Renderer::renderGame(Board& board, Piece& piece) {
 			}
 		}
 	}
-	// TODO: show queue
+	// Show the queue
+	// TODO: queue size config
+	std::vector<Block> futurequeue = bag.viewFuture(5);
+	int miniWidth = blockWidth / 2;
+	int blockDisplayStartx = board.getWidth() * blockWidth + miniWidth;
+	int blockDisplayStarty = miniWidth;
+	for (int i = 0; i < futurequeue.size(); i++) {
+		Block blockHere = futurequeue[i];
+		// Display the block (smaller than usual, on the right side)
+		for (int y = 0; y < PIECE_SIZE; y++) {
+			for (int x = 0; x < PIECE_SIZE; x++) {
+				Block cellHere = numberToBlock(PIECE_DATA[blockToIndex(blockHere)][0][y][x]);
+				if (cellHere != Block::None) {
+					renderRect(blockDisplayStartx + x * miniWidth, blockDisplayStarty + i * 4 * miniWidth + y * miniWidth, miniWidth, miniWidth, multColor(blockToColor(blockHere), 0.9));
+					renderRect(blockDisplayStartx + x * miniWidth + miniWidth / 10, blockDisplayStarty + i * 4 * miniWidth + y * miniWidth + miniWidth / 10, miniWidth * 8 / 10, miniWidth * 8 / 10, blockToColor(blockHere));
+					renderRect(blockDisplayStartx + x * miniWidth + miniWidth / 10, blockDisplayStarty + i * 4 * miniWidth + y * miniWidth + miniWidth / 10, miniWidth * 8 / 10, miniWidth / 10, lerpWhiteColor(blockToColor(blockHere), 0.8));
+				}
+			}
+		}
+	}
 
 	window.display();
 }

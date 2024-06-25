@@ -1,3 +1,5 @@
+#pragma once
+
 #include <vector>
 #include <deque>
 #include <stdlib.h>
@@ -60,7 +62,7 @@ public:
 		return res;
 	}
 
-	// View the next n pieces in the queue
+	// View the next n pieces in the queue (front is the next one)
 	std::vector<Block> viewFuture(int n) {
 		if (n >= nextPieces.size()) return { };
 		// View n pieces
