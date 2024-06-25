@@ -52,7 +52,6 @@ public:
 		if (nextPieces.empty()) {
 			return Block::None;
 		}
-		// Pop the next piece
 		Block res = nextPieces.front();
 		nextPieces.pop_front();
 		// If the queue is too small, add the next bag
@@ -65,7 +64,6 @@ public:
 	// View the next n pieces in the queue (front is the next one)
 	std::vector<Block> viewFuture(int n) {
 		if (n >= nextPieces.size()) return { };
-		// View n pieces
 		std::vector<Block> res;
 		for (int i = 0; i < n; i++) {
 			res.push_back(nextPieces[i]);

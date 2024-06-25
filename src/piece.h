@@ -40,6 +40,9 @@ public:
 	// Get the cell at a local coordinate
 	Block getCell(int x, int y);
 
+	// Get the piece type
+	Block getPieceType();
+
 	// Update the piece's block map based on its type and rotation frame
 	void updateBlockMap();
 

@@ -23,6 +23,7 @@ add_executable(Supertris
 	src/constants.h
 	src/utils.h
 	src/bag.h
+	src/bag.cpp
 	src/inputhandler.h
 	src/score.h
 )

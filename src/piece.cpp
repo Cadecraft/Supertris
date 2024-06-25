@@ -74,6 +74,10 @@ Block Piece::getCell(int x, int y) {
 	return blockMap[y][x];
 }
 
+Block Piece::getPieceType() {
+	return pieceType;
+}
+
 void Piece::updateBlockMap() {
 	if (pieceType == Block::None) return; // Impossible
 	// Copy from the piece data

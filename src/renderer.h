@@ -23,5 +23,5 @@ public:
 	void renderRect(int x, int y, int width, int height, Color color);
 
 	// Render the entire screen
-	void renderGame(Board& board, Piece& piece, Bag& bag);
+	void renderGame(Board& board, Piece& piece, Bag& bag, Block holdBlock);
 };

@@ -30,7 +30,10 @@ int main() {
 	Bag bag;
 	Piece piece(bag.popNextPiece());
 	InputHandler inputHandler;
-	// TODO: timing (calculate ms elapsed better) !
+	// TODO: hold
+	Block holdBlock = Block::None;
+	bool canSwapHold = true; // TODO: refactor better for when piece locks, update when game is reset
+	// TODO: timing (test calculation of ms elapsed) !
 	uint64_t previousTime = currentTimeMs();
 
 	// Main game loop
@@ -56,7 +59,6 @@ int main() {
 		int msElapsed = currentTimeMs() - previousTime; // TODO: check clock calibration
 		previousTime = currentTimeMs();
 		int frameRate = 1000.0 / msElapsed;
-		std::cout << frameRate << " FPS" << std::endl;
 		// TODO: more updates (falling)
 		// Update input
 		inputHandler.updateCooldowns(msElapsed);
@@ -105,6 +107,7 @@ int main() {
 				// Lock and reset
 				int cleared = board.lockPiece(piece);
 				piece.respawn(bag.popNextPiece());
+				canSwapHold = true;
 				// TODO: scoring
 			}
 		}
@@ -117,6 +120,7 @@ int main() {
 			// Lock and reset
 			int cleared = board.lockPiece(piece);
 			piece.respawn(bag.popNextPiece());
+			canSwapHold = true;
 			// TODO: scoring
 		}
 		if (inputHandler.isActive(sf::Keyboard::Scan::R)) {
@@ -125,10 +129,22 @@ int main() {
 			board.reset();
 			// TODO: also reset bag, piece, etc.
 		}
+		if (inputHandler.isActive(sf::Keyboard::Scan::LShift) || inputHandler.isActive(sf::Keyboard::Scan::RShift)) {
+			// Swap the current hold piece, if possible
+			inputHandler.addToCooldown(sf::Keyboard::Scan::LShift);
+			inputHandler.addToCooldown(sf::Keyboard::Scan::RShift);
+			if (canSwapHold) {
+				canSwapHold = false;
+				Block swapTo = holdBlock;
+				if (swapTo == Block::None) swapTo = bag.popNextPiece();
+				holdBlock = piece.getPieceType();
+				piece.respawn(swapTo);
+			}
+		}
 
 		// TODO: more updates (falling)
 		// Render
-		renderer.renderGame(board, piece, bag);
+		renderer.renderGame(board, piece, bag, holdBlock);
 	}
 	return 0;
 }

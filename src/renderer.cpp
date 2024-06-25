@@ -13,7 +13,7 @@ void Renderer::renderRect(int x, int y, int width, int height, Color color) {
 	window.draw(toRender);
 }
 
-void Renderer::renderGame(Board& board, Piece& piece, Bag& bag) {
+void Renderer::renderGame(Board& board, Piece& piece, Bag& bag, Block holdBlock) {
 	// Calculate the shadow piece
 	Piece shadow(piece);
 	for (int i = 0; i < 20; i++) {
@@ -81,13 +81,26 @@ void Renderer::renderGame(Board& board, Piece& piece, Bag& bag) {
 			for (int x = 0; x < PIECE_SIZE; x++) {
 				Block cellHere = numberToBlock(PIECE_DATA[blockToIndex(blockHere)][0][y][x]);
 				if (cellHere != Block::None) {
-					renderRect(blockDisplayStartx + x * miniWidth, blockDisplayStarty + i * 4 * miniWidth + y * miniWidth, miniWidth, miniWidth, multColor(blockToColor(blockHere), 0.9));
-					renderRect(blockDisplayStartx + x * miniWidth + miniWidth / 10, blockDisplayStarty + i * 4 * miniWidth + y * miniWidth + miniWidth / 10, miniWidth * 8 / 10, miniWidth * 8 / 10, blockToColor(blockHere));
-					renderRect(blockDisplayStartx + x * miniWidth + miniWidth / 10, blockDisplayStarty + i * 4 * miniWidth + y * miniWidth + miniWidth / 10, miniWidth * 8 / 10, miniWidth / 10, lerpWhiteColor(blockToColor(blockHere), 0.8));
+					renderRect(blockDisplayStartx + x * miniWidth, blockDisplayStarty + i * 4 * miniWidth + y * miniWidth, miniWidth, miniWidth, multColor(blockToColor(cellHere), 0.9));
+					renderRect(blockDisplayStartx + x * miniWidth + miniWidth / 10, blockDisplayStarty + i * 4 * miniWidth + y * miniWidth + miniWidth / 10, miniWidth * 8 / 10, miniWidth * 8 / 10, blockToColor(cellHere));
+					renderRect(blockDisplayStartx + x * miniWidth + miniWidth / 10, blockDisplayStarty + i * 4 * miniWidth + y * miniWidth + miniWidth / 10, miniWidth * 8 / 10, miniWidth / 10, lerpWhiteColor(blockToColor(cellHere), 0.8));
 				}
 			}
 		}
 	}
+	// Show the hold block
+	// TODO: show the hold block
+	for (int y = 0; y < PIECE_SIZE; y++) {
+		for (int x = 0; x < PIECE_SIZE; x++) {
+			Block cellHere = numberToBlock(PIECE_DATA[blockToIndex(holdBlock)][0][y][x]);
+			if (cellHere != Block::None) {
+				renderRect(miniWidth + x * miniWidth, miniWidth + y * miniWidth, miniWidth, miniWidth, multColor(blockToColor(cellHere), 0.9));
+				renderRect(miniWidth + x * miniWidth + miniWidth / 10, miniWidth + y * miniWidth + miniWidth / 10, miniWidth * 8 / 10, miniWidth * 8 / 10, blockToColor(cellHere));
+				renderRect(miniWidth + x * miniWidth + miniWidth / 10, miniWidth + y * miniWidth + miniWidth / 10, miniWidth * 8 / 10, miniWidth / 10, lerpWhiteColor(blockToColor(cellHere), 0.8));
+			}
+		}
+	}
+
 
 	window.display();
 }
