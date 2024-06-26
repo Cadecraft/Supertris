@@ -5,8 +5,8 @@
 // Constants for the game
 
 // System constants
-const std::string RECENT_VERSION = "0.3.0";
-const std::string EDIT_DATE = "2024/06/24";
+const std::string RECENT_VERSION = "0.4.0";
+const std::string EDIT_DATE = "2024/06/25";
 
 // Rendering constants
 const unsigned int DEFAULT_WINDOW_WIDTH = 400; // 300

@@ -55,8 +55,31 @@ void Piece::rotate(int direction, Board& board) {
 	}
 	updateBlockMap();
 	if (!isValid(board)) {
-		// Invalid: must undo
+		// Invalid: try to find a spot
+		int origlocx = locx;
+		int origlocy = locy;
+		// trymatrix[i]: {x, y}
+		const int tryMatrixSize = 8;
+		// TODO: different trymatrices per piece/piece rotation frame?
+		int tryMatrix[tryMatrixSize][2] = {
+			{ -1, 0 },
+			{ -1, 1 },
+			{ -1, -1 },
+			{ 0, 1 },
+			{ 0, -1 },
+			{ 1, 0 },
+			{ 1, 1 },
+			{ 1, -1 }
+		};
+		for (int i = 0; i < tryMatrixSize; i++) {
+			locx = origlocx + tryMatrix[i][0];
+			locy = origlocy + tryMatrix[i][1];
+			if (isValid(board)) return;
+		}
+		// Still invalid: must undo
 		rotationFrame = orig;
+		locx = origlocx;
+		locy = origlocy;
 		updateBlockMap();
 	}
 }

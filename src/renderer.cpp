@@ -1,6 +1,6 @@
 #include "renderer.h"
 
-Renderer::Renderer(sf::RenderWindow& window) : window(window) {
+Renderer::Renderer(sf::RenderWindow& window, AssetHandler& assetHandler) : window(window), assetHandler(assetHandler) {
 	// TODO: update defaults if needed
 	blockWidth = 30;
 }
@@ -13,7 +13,17 @@ void Renderer::renderRect(int x, int y, int width, int height, Color color) {
 	window.draw(toRender);
 }
 
-void Renderer::renderGame(Board& board, Piece& piece, Bag& bag, Block holdBlock) {
+void Renderer::renderText(int x, int y, int size, Color color, sf::Font& font, std::string str) {
+	sf::Text text;
+	text.setFont(font);
+	text.setString(str);
+	text.setCharacterSize(size);
+	text.setFillColor(sf::Color(color.r, color.g, color.b));
+	text.setPosition(sf::Vector2f(x, y));
+	window.draw(text);
+}
+
+void Renderer::renderGame(Board& board, Piece& piece, Bag& bag, Block holdBlock, Score& score) {
 	// Calculate the shadow piece
 	Piece shadow(piece);
 	for (int i = 0; i < 20; i++) {
@@ -89,7 +99,6 @@ void Renderer::renderGame(Board& board, Piece& piece, Bag& bag, Block holdBlock)
 		}
 	}
 	// Show the hold block
-	// TODO: show the hold block
 	for (int y = 0; y < PIECE_SIZE; y++) {
 		for (int x = 0; x < PIECE_SIZE; x++) {
 			Block cellHere = numberToBlock(PIECE_DATA[blockToIndex(holdBlock)][0][y][x]);
@@ -100,7 +109,26 @@ void Renderer::renderGame(Board& board, Piece& piece, Bag& bag, Block holdBlock)
 			}
 		}
 	}
-
-
+	// TODO: UI: Show controls info
+	sf::Font& font = assetHandler.getFont();
+	renderText(
+		board.getWidth() * blockWidth, board.getHeight() * blockWidth - 6 * blockWidth, 18,
+		{ 77, 84, 112 }, font, "R = restart\nESC = exit"
+	);
+	// Other color: { 146, 152, 176 }
+	// UI: Show current score data
+	// TODO: improve appearance, show towards top of screen
+	std::string scoreString = "";
+	scoreString += "Score: ";
+	scoreString += std::to_string(score.points);
+	scoreString += "\nLines: ";
+	scoreString += std::to_string(score.lines);
+	scoreString += "\nTime: ";
+	scoreString += std::to_string((int) (score.timeElapsed / 1000));
+	if (score.currStreak > 0) {
+		scoreString += "\nB2B: ";
+		scoreString += std::to_string(score.currStreak);
+	}
+	renderText(board.getWidth() * blockWidth, board.getHeight() * blockWidth - 4 * blockWidth, 18, { 77, 84, 112 }, font, scoreString);
 	window.display();
 }

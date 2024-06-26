@@ -11,6 +11,7 @@ FetchContent_Declare(SFML
 FetchContent_MakeAvailable(SFML)
 
 # Add all source files
+# TODO: check all listed
 # TODO: glob?
 add_executable(Supertris
 	src/main.cpp
@@ -23,8 +24,8 @@ add_executable(Supertris
 	src/constants.h
 	src/utils.h
 	src/bag.h
-	src/bag.cpp
 	src/inputhandler.h
+	src/assethandler.h
 	src/score.h
 )
 target_link_libraries(Supertris PRIVATE sfml-graphics)
@@ -39,3 +40,14 @@ if(WIN32)
 endif()
 
 install(TARGETS Supertris)
+
+# List all assets
+set(ASSETS
+	LiberationSans-Regular.ttf
+)
+# Copy over the assets folder
+foreach(ASSET ${ASSETS})
+	# Copy the asset into the build assets folder
+	file(COPY "src/assets/${ASSET}" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/bin/Debug/assets/")
+	file(COPY "src/assets/${ASSET}" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/bin/Release/assets/")
+endforeach()

@@ -8,12 +8,14 @@
 #include "renderer.h"
 #include "bag.h"
 #include "inputhandler.h"
+#include "assethandler.h"
 
 /* TODO:
 	- does build work on Linux or Mac?
-	- implement the whole game: clearing lines, score and points, tspins
+	- implement the whole game: clearing lines, advanced score and points (ex. quads and continued), tspins
 	- smarter rotation checking/locking
-	- input refactor: only allow one rotation, store key press/release without deleting, arr/das, etc.
+	- arr/das/sdf settings
+	- graphics improve
 	- other?
 */
 
@@ -25,16 +27,19 @@ int main() {
 	window.setFramerateLimit(144);
 
 	// Create game objects
-	Renderer renderer(window);
 	Board board;
 	Bag bag;
 	Piece piece(bag.popNextPiece());
 	InputHandler inputHandler;
-	// TODO: hold
+	AssetHandler assetHandler;
+	Renderer renderer(window, assetHandler);
+	Score score(currentTimeMs());
 	Block holdBlock = Block::None;
 	bool canSwapHold = true; // TODO: refactor better for when piece locks, update when game is reset
-	// TODO: timing (test calculation of ms elapsed) !
+	// Timing
+	// TODO: timing fix (test calculation of ms elapsed) !
 	uint64_t previousTime = currentTimeMs();
+	uint64_t startTime = currentTimeMs();
 
 	// Main game loop
 	while (window.isOpen()) {
@@ -59,6 +64,7 @@ int main() {
 		int msElapsed = currentTimeMs() - previousTime; // TODO: check clock calibration
 		previousTime = currentTimeMs();
 		int frameRate = 1000.0 / msElapsed;
+		score.updateTime(currentTimeMs());
 		// TODO: more updates (falling)
 		// Update input
 		inputHandler.updateCooldowns(msElapsed);
@@ -108,7 +114,7 @@ int main() {
 				int cleared = board.lockPiece(piece);
 				piece.respawn(bag.popNextPiece());
 				canSwapHold = true;
-				// TODO: scoring
+				score.increase(cleared, false); // TODO: handle tspins
 			}
 		}
 		if (inputHandler.isActive(sf::Keyboard::Scan::S)) {
@@ -121,13 +127,13 @@ int main() {
 			int cleared = board.lockPiece(piece);
 			piece.respawn(bag.popNextPiece());
 			canSwapHold = true;
-			// TODO: scoring
+			score.increase(cleared, false); // TODO: handle tspins
 		}
 		if (inputHandler.isActive(sf::Keyboard::Scan::R)) {
 			// Restart
 			inputHandler.addToCooldown(sf::Keyboard::Scan::R);
 			board.reset();
-			// TODO: also reset bag, piece, etc.
+			// TODO: also reset bag, piece, score, etc. (maybe just return from a new "game" function and then continue the loop?)
 		}
 		if (inputHandler.isActive(sf::Keyboard::Scan::LShift) || inputHandler.isActive(sf::Keyboard::Scan::RShift)) {
 			// Swap the current hold piece, if possible
@@ -144,7 +150,7 @@ int main() {
 
 		// TODO: more updates (falling)
 		// Render
-		renderer.renderGame(board, piece, bag, holdBlock);
+		renderer.renderGame(board, piece, bag, holdBlock, score);
 	}
 	return 0;
 }
