@@ -7,15 +7,19 @@
 #include "piece.h"
 #include "renderer.h"
 #include "bag.h"
+#include "config.h"
 #include "inputhandler.h"
 #include "assethandler.h"
 
 /* TODO:
 	- does build work on Linux or Mac?
 	- implement the whole game: clearing lines, advanced score and points (ex. quads and continued), tspins
-	- smarter rotation checking/locking
+	- smarter rotation checking/locking (from guideline?)
+	- death and dead-colored blocks
 	- arr/das/sdf settings
 	- graphics improve
+	- UI system with config, game modes, etc.
+	- click-based button UI as well as keyboard-based number UI
 	- other?
 */
 
@@ -35,7 +39,13 @@ int main() {
 	Renderer renderer(window, assetHandler);
 	Score score(currentTimeMs());
 	Block holdBlock = Block::None;
+	Config config;
+	Effects effects;
+	effects.resetByBoard(board); // TODO: refactor?
 	bool canSwapHold = true; // TODO: refactor better for when piece locks, update when game is reset
+	uint64_t fallTimerTarget = currentTimeMs() + score.getMsPerFall(); // TODO: refactor into various timers?
+	bool prevAutodropShouldLock = false; // TODO: refactor into various timers/data
+	uint64_t autodropTimerTarget = currentTimeMs() + score.getMsPerAutolock();
 	// Timing
 	// TODO: timing fix (test calculation of ms elapsed) !
 	uint64_t previousTime = currentTimeMs();
@@ -65,7 +75,35 @@ int main() {
 		previousTime = currentTimeMs();
 		int frameRate = 1000.0 / msElapsed;
 		score.updateTime(currentTimeMs());
-		// TODO: more updates (falling)
+		// Falling
+		if (currentTimeMs() > fallTimerTarget) {
+			fallTimerTarget = currentTimeMs() + score.getMsPerFall();
+			// Fall
+			bool shouldLock = piece.move(0, 1, board);
+			shouldLock = piece.shouldLockNext(board);
+			// TODO: only lock after sitting there for 1000ms
+			// TODO: FIX !
+			if (shouldLock) {
+				if (prevAutodropShouldLock && currentTimeMs() > autodropTimerTarget) {
+					prevAutodropShouldLock = false;
+					// Lock and reset
+					int cleared = board.lockPiece(piece);
+					score.increase(cleared, false, board.isClear()); // TODO: handle tspins
+					if (cleared == 0) effects.sparklePiece(piece);
+					piece.respawn(bag.popNextPiece()); // TODO: refactor the lock process
+					canSwapHold = true;
+					if (!piece.isValid(board)) score.die();
+
+				} else {
+					// Do not lock; set the timer
+					prevAutodropShouldLock = true;
+					autodropTimerTarget = currentTimeMs() + score.getMsPerAutolock(); // TODO: incr based on ms per fall AND this
+					fallTimerTarget = autodropTimerTarget - 1;
+				}
+			} else {
+				prevAutodropShouldLock = false;
+			}
+		}
 		// Update input
 		inputHandler.updateCooldowns(msElapsed);
 		// Process input
@@ -73,18 +111,18 @@ int main() {
 			// Left
 			// TODO: issue pressing both left and right at the same time (prioritize whichever was pressed latest)
 			if (inputHandler.inCooldownData(sf::Keyboard::Scan::A)) {
-				inputHandler.addToCooldown(sf::Keyboard::Scan::A, 2); // TODO: ARR ("infinite" should just for(10))
+				inputHandler.addToCooldown(sf::Keyboard::Scan::A, config.getArr()); // TODO: ARR ("infinite" should just for(10))
 			} else {
-				inputHandler.addToCooldown(sf::Keyboard::Scan::A, 140); // TODO: DAS
+				inputHandler.addToCooldown(sf::Keyboard::Scan::A, config.getDas()); // TODO: DAS
 			}
 			piece.move(-1, 0, board);
 		}
 		if (inputHandler.isActive(sf::Keyboard::Scan::D) && !inputHandler.inCooldownData(sf::Keyboard::Scan::A)) {
 			// Right
 			if (inputHandler.inCooldownData(sf::Keyboard::Scan::D)) {
-				inputHandler.addToCooldown(sf::Keyboard::Scan::D, 2); // TODO: ARR
+				inputHandler.addToCooldown(sf::Keyboard::Scan::D, config.getArr()); // TODO: ARR
 			} else {
-				inputHandler.addToCooldown(sf::Keyboard::Scan::D, 140); // TODO: DAS
+				inputHandler.addToCooldown(sf::Keyboard::Scan::D, config.getDas()); // TODO: DAS
 			}
 			piece.move(1, 0, board);
 		}
@@ -105,16 +143,18 @@ int main() {
 		}
 		if (inputHandler.isActive(sf::Keyboard::Scan::W)) {
 			// Soft drop
-			inputHandler.addToCooldown(sf::Keyboard::Scan::W, 10); // TODO: refactor into SDF
+			inputHandler.addToCooldown(sf::Keyboard::Scan::W, config.getSdf()); // TODO: refactor into SDF
 			bool shouldLock = piece.move(0, 1, board);
 			shouldLock = false; // TODO: only lock if enough time has elapsed since the piece first hit the bottom
 			// TODO: non-locking for a cooldown second if staying in the same spot
 			if (shouldLock) {
 				// Lock and reset
 				int cleared = board.lockPiece(piece);
+				score.increase(cleared, false, board.isClear()); // TODO: handle tspins
+				if (cleared == 0) effects.sparklePiece(piece);
 				piece.respawn(bag.popNextPiece());
 				canSwapHold = true;
-				score.increase(cleared, false); // TODO: handle tspins
+				if (!piece.isValid(board)) score.die();
 			}
 		}
 		if (inputHandler.isActive(sf::Keyboard::Scan::S)) {
@@ -125,9 +165,11 @@ int main() {
 			}
 			// Lock and reset
 			int cleared = board.lockPiece(piece);
+			score.increase(cleared, false, board.isClear()); // TODO: handle tspins
+			if (cleared == 0) effects.sparklePiece(piece);
 			piece.respawn(bag.popNextPiece());
 			canSwapHold = true;
-			score.increase(cleared, false); // TODO: handle tspins
+			if (!piece.isValid(board)) score.die();
 		}
 		if (inputHandler.isActive(sf::Keyboard::Scan::R)) {
 			// Restart
@@ -148,9 +190,10 @@ int main() {
 			}
 		}
 
-		// TODO: more updates (falling)
+		// Update graphics
+		effects.updateByFrame();
 		// Render
-		renderer.renderGame(board, piece, bag, holdBlock, score);
+		renderer.renderGame(board, piece, bag, holdBlock, score, effects);
 	}
 	return 0;
 }

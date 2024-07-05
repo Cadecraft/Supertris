@@ -31,4 +31,6 @@ public:
 	int lockPiece(Piece& piece);
 	// Reset the board based on the width and height
 	void reset();
+	// Get whether the board is fully clear
+	bool isClear();
 };

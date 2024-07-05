@@ -41,6 +41,14 @@ bool Piece::move(int deltax, int deltay, Board& board) {
 	return false;
 }
 
+bool Piece::shouldLockNext(Board& board) {
+	// Check below
+	locy += 1;
+	bool res = !isValid(board);
+	locy -= 1;
+	return res;
+}
+
 void Piece::rotate(int direction, Board& board) {
 	int orig = rotationFrame;
 	if (direction == 1) {

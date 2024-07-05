@@ -10,7 +10,7 @@ const std::string EDIT_DATE = "2024/06/25";
 
 // Rendering constants
 const unsigned int DEFAULT_WINDOW_WIDTH = 400; // 300
-const unsigned int DEFAULT_WINDOW_HEIGHT = 600; // 600
+const unsigned int DEFAULT_WINDOW_HEIGHT = 660; // 600
 const bool RENDER_EDGES = false; // false
 
 // Game constants

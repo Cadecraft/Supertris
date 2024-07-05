@@ -28,6 +28,9 @@ public:
 	// Return whether the piece should be locked in
 	bool move(int deltax, int deltay, Board& board);
 
+	// Return whether the piece should be locked in on the next drop
+	bool shouldLockNext(Board& board);
+
 	// Rotate the piece in the specified direction (-1 = left, 1 = right, 2 = 180)
 	void rotate(int direction, Board& board);
 

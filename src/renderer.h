@@ -11,6 +11,7 @@
 #include "piece.h"
 #include "assethandler.h"
 #include "score.h"
+#include "effects.h"
 
 // Render the world
 class Renderer {
@@ -29,6 +30,9 @@ public:
 	// Render text onto the screen
 	void renderText(int x, int y, int size, Color color, sf::Font& font, std::string str);
 
+	// Render a block onto the screen
+	void renderBlock(int x, int y, int boardOffsetx, int boardOffsety, int widthToUse, Block cellHere, int sparkleValue);
+
 	// Render the entire screen
-	void renderGame(Board& board, Piece& piece, Bag& bag, Block holdBlock, Score& score);
+	void renderGame(Board& board, Piece& piece, Bag& bag, Block holdBlock, Score& score, Effects& effects);
 };

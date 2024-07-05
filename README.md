@@ -32,3 +32,16 @@ For a multi-configuration generator (typically the case on Windows):
 cmake -S . -B build
 cmake --build build --config Release
 ```
+
+## Controls
+
+### Guideline
+- Coming soon!
+
+### WASD
+- Left/right - `A`/`D`
+- Soft drop - `W`
+- Hard drop - `S`
+- Rotate left/right - `Left arrow`/`Right arrow`
+- Rotate 180 degrees - `Up arrow`
+- Swap hold piece - `Shift`

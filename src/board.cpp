@@ -73,3 +73,12 @@ int Board::lockPiece(Piece& piece) {
 	}
 	return rowsCleared;
 }
+
+bool Board::isClear() {
+	for (int y = 0; y < height; y++) {
+		for (int x = 0; x < width; x++) {
+			if (board[y][x] != Block::None) return false;
+		}
+	}
+	return true;
+}
