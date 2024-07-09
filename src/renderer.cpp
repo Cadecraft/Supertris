@@ -5,11 +5,11 @@ Renderer::Renderer(sf::RenderWindow& window, AssetHandler& assetHandler) : windo
 	blockWidth = 30;
 }
 
-void Renderer::renderRect(int x, int y, int width, int height, Color color) {
+void Renderer::renderRect(int x, int y, int width, int height, Color color, int opacity = 255) {
 	sf::RectangleShape toRender;
 	toRender.setSize(sf::Vector2f(width, height));
 	toRender.setPosition(sf::Vector2f(x, y));
-	toRender.setFillColor(sf::Color(color.r, color.g, color.b));
+	toRender.setFillColor(sf::Color(color.r, color.g, color.b, opacity));
 	window.draw(toRender);
 }
 
@@ -50,7 +50,7 @@ void Renderer::renderGame(Board& board, Piece& piece, Bag& bag, Block holdBlock,
 	for (int y = 0; y < board.getHeight(); y++) {
 		for (int x = 0; x < board.getWidth(); x++) {
 			// Render a rectangle, if desired
-			// TODO: effects
+			// TODO: more effects
 			// Determine whether to render the piece or the existing board cell
 			Block pieceCellHere = piece.getCell(x - piece.getLocx(), y - piece.getLocy());
 			Block boardCellHere = board.getCell(x, y);
@@ -84,7 +84,17 @@ void Renderer::renderGame(Board& board, Piece& piece, Bag& bag, Block holdBlock,
 					}
 				}
 			}
+			// Effects
+			// Beam
+			if (y == effects.getBeamLocy()) {
+				renderRect(0, boardOffsety + y * blockWidth + 9 * blockWidth / 10, blockWidth * board.getWidth(), blockWidth / 10, { 255, 255, 255 }, effects.getBeamStrength() * 255 / 100);
+			}
 		}
+	}
+	// Flash the screen if needed
+	if (effects.getFlashStrength() > 0) {
+		// Flash
+		renderRect(0, boardOffsety, blockWidth * board.getWidth(), blockWidth * board.getHeight(), effects.getFlashColor(), effects.getFlashStrength() * 255 / 100);
 	}
 	// Show the queue
 	// TODO: queue size config

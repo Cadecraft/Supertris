@@ -25,7 +25,7 @@ public:
 	Renderer(sf::RenderWindow& window, AssetHandler& assetHandler);
 
 	// Render a rectangle onto the screen
-	void renderRect(int x, int y, int width, int height, Color color);
+	void renderRect(int x, int y, int width, int height, Color color, int opacity);
 
 	// Render text onto the screen
 	void renderText(int x, int y, int size, Color color, sf::Font& font, std::string str);

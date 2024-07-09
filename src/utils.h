@@ -102,6 +102,9 @@ inline Color blockToColor(Block block) {
 	}
 }
 
+// Colors list
+inline Color COLOR_LINECLEAR = { 255, 190, 30 };
+
 // Multiply a color by a decimal
 inline Color multColor(Color color, double alpha) {
 	return { (int) (color.r * alpha), (int) (color.g * alpha), (int) (color.b * alpha) };

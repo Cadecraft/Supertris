@@ -19,6 +19,16 @@ void Effects::updateByFrame() {
 			else sparkleBoard[y][x] = 0;
 		}
 	}
+	// Update the beam to be slightly less
+	beamStrength -= 5;
+	if (beamStrength <= 0) {
+		beamLocy = -1;
+		beamStrength = 0;
+	}
+	flashStrength -= 2;
+	if (flashStrength <= 0) {
+		flashStrength = 0;
+	}
 }
 
 int Effects::getSparkleValue(int x, int y) {
@@ -39,4 +49,30 @@ void Effects::sparklePiece(Piece& piece) {
 			}
 		}
 	}
+}
+
+void Effects::spawnFlash(Color color, int strength) {
+	flashColor = color;
+	flashStrength = strength;
+}
+
+void Effects::spawnBeam(int locy) {
+	beamLocy = locy;
+	beamStrength = 100;
+}
+
+int Effects::getBeamLocy() {
+	return beamLocy;
+}
+
+int Effects::getBeamStrength() {
+	return beamStrength;
+}
+
+Color Effects::getFlashColor() {
+	return flashColor;
+}
+
+int Effects::getFlashStrength() {
+	return flashStrength;
 }

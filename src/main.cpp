@@ -14,6 +14,7 @@
 /* TODO:
 	- does build work on Linux or Mac?
 	- implement the whole game: clearing lines, advanced score and points (ex. quads and continued), tspins
+	- when run from command line, sometimes fails to find the font asset?
 	- smarter rotation checking/locking (from guideline?)
 	- death and dead-colored blocks
 	- arr/das/sdf settings
@@ -82,6 +83,7 @@ int main() {
 			bool shouldLock = piece.move(0, 1, board);
 			shouldLock = piece.shouldLockNext(board);
 			// TODO: only lock after sitting there for 1000ms
+			// TODO: separate timer (store in the piece class or something?)?
 			// TODO: FIX !
 			if (shouldLock) {
 				if (prevAutodropShouldLock && currentTimeMs() > autodropTimerTarget) {
@@ -90,6 +92,8 @@ int main() {
 					int cleared = board.lockPiece(piece);
 					score.increase(cleared, false, board.isClear()); // TODO: handle tspins
 					if (cleared == 0) effects.sparklePiece(piece);
+					else if (cleared == 4) effects.spawnFlash(COLOR_LINECLEAR, 40); // TODO: also flash on tspin
+					//else effects.spawnBeam(piece.getLocy()); // TODO: fix to use actual line clear bottom
 					piece.respawn(bag.popNextPiece()); // TODO: refactor the lock process
 					canSwapHold = true;
 					if (!piece.isValid(board)) score.die();
@@ -109,20 +113,29 @@ int main() {
 		// Process input
 		if (inputHandler.isActive(sf::Keyboard::Scan::A) && !inputHandler.inCooldownData(sf::Keyboard::Scan::D)) {
 			// Left
-			// TODO: issue pressing both left and right at the same time (prioritize whichever was pressed latest)
 			if (inputHandler.inCooldownData(sf::Keyboard::Scan::A)) {
-				inputHandler.addToCooldown(sf::Keyboard::Scan::A, config.getArr()); // TODO: ARR ("infinite" should just for(10))
+				inputHandler.addToCooldown(sf::Keyboard::Scan::A, config.getArr());
+				if (config.getArr() == 0) {
+					for (int i = 0; i < 10; i++) {
+						piece.move(-1, 0, board);
+					}
+				}
 			} else {
-				inputHandler.addToCooldown(sf::Keyboard::Scan::A, config.getDas()); // TODO: DAS
+				inputHandler.addToCooldown(sf::Keyboard::Scan::A, config.getDas());
 			}
 			piece.move(-1, 0, board);
 		}
 		if (inputHandler.isActive(sf::Keyboard::Scan::D) && !inputHandler.inCooldownData(sf::Keyboard::Scan::A)) {
 			// Right
 			if (inputHandler.inCooldownData(sf::Keyboard::Scan::D)) {
-				inputHandler.addToCooldown(sf::Keyboard::Scan::D, config.getArr()); // TODO: ARR
+				inputHandler.addToCooldown(sf::Keyboard::Scan::D, config.getArr());
+				if (config.getArr() == 0) {
+					for (int i = 0; i < 9; i++) {
+						piece.move(1, 0, board);
+					}
+				}
 			} else {
-				inputHandler.addToCooldown(sf::Keyboard::Scan::D, config.getDas()); // TODO: DAS
+				inputHandler.addToCooldown(sf::Keyboard::Scan::D, config.getDas());
 			}
 			piece.move(1, 0, board);
 		}
@@ -145,6 +158,11 @@ int main() {
 			// Soft drop
 			inputHandler.addToCooldown(sf::Keyboard::Scan::W, config.getSdf()); // TODO: refactor into SDF
 			bool shouldLock = piece.move(0, 1, board);
+			if (config.getSdf() == 0) {
+				for (int i = 0; i < 19; i++) {
+					shouldLock = piece.move(0, 1, board);
+				}
+			}
 			shouldLock = false; // TODO: only lock if enough time has elapsed since the piece first hit the bottom
 			// TODO: non-locking for a cooldown second if staying in the same spot
 			if (shouldLock) {
@@ -152,6 +170,8 @@ int main() {
 				int cleared = board.lockPiece(piece);
 				score.increase(cleared, false, board.isClear()); // TODO: handle tspins
 				if (cleared == 0) effects.sparklePiece(piece);
+				else if (cleared == 4) effects.spawnFlash(COLOR_LINECLEAR, 40); // TODO: also flash on tspin
+				//else effects.spawnBeam(piece.getLocy()); // TODO: fix to use actual line clear bottom
 				piece.respawn(bag.popNextPiece());
 				canSwapHold = true;
 				if (!piece.isValid(board)) score.die();
@@ -167,6 +187,8 @@ int main() {
 			int cleared = board.lockPiece(piece);
 			score.increase(cleared, false, board.isClear()); // TODO: handle tspins
 			if (cleared == 0) effects.sparklePiece(piece);
+			else if (cleared == 4) effects.spawnFlash(COLOR_LINECLEAR, 40); // TODO: also flash on tspin
+			//else effects.spawnBeam(piece.getLocy()); // TODO: fix to use actual line clear bottom
 			piece.respawn(bag.popNextPiece());
 			canSwapHold = true;
 			if (!piece.isValid(board)) score.die();

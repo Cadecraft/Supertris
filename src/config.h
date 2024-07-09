@@ -14,9 +14,10 @@ public:
 	// Create the default config
 	Config() {
 		// WASD: arr = 2, das = 140, sdf = 10
-		arr = 2;
+        // Pro: arr = 0, das = 140, sdf = 0
+		arr = 0; // 2
 		das = 140;
-		sdf = 10;
+		sdf = 0; // 10
 	}
 
 	// Get the auto repeat rate in milliseconds
