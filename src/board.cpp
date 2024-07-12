@@ -42,6 +42,16 @@ void Board::debug_putCell(int x, int y, Block toPut) {
 	board[y][x] = toPut;
 }
 
+void Board::die() {
+	for (int y = 0; y < height; y++) {
+		for (int x = 0; x < width; x++) {
+			if (board[y][x] != Block::None) {
+				board[y][x] = Block::Dead;
+			}
+		}
+	}
+}
+
 int Board::lockPiece(Piece& piece) {
 	if (!piece.isValid(*this)) return 0; // Invalid piece cannot be locked
 	for (int y = 0; y < PIECE_SIZE; y++) {

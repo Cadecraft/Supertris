@@ -27,6 +27,8 @@ public:
 	Block getCell(int x, int y);
 	// DEBUG: Put a block at a specific cell
 	void debug_putCell(int x, int y, Block toPut);
+	// Turn the board to gray when the player dies
+	void die();
 	// Lock a piece and return the number of rows cleared
 	int lockPiece(Piece& piece);
 	// Reset the board based on the width and height

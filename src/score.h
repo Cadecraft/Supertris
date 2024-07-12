@@ -19,6 +19,11 @@ public:
 
 	// Initialize the score with the time the game started
 	Score(uint64_t startTimeMs) {
+		reset(startTimeMs);
+	}
+
+	// Reset the score
+	void reset(uint64_t startTimeMs) {
 		points = 0;
 		quads = 0;
 		lines = 0;
@@ -55,6 +60,7 @@ public:
 
 	// Increase the score after a piece is locked based on score and game factors
 	void increase(int linesCleared, bool wasTspin, bool isBoardClear) {
+		if (dead) return; // Cannot score when dead
 		// Increase for the piece lock
 		points += 2;
 		// Increase score and account for lines cleared
@@ -110,5 +116,10 @@ public:
 			// All clear
 			points += 100;
 		}
+	}
+
+	// Get whether the player is dead
+	bool getDead() {
+		return dead;
 	}
 };

@@ -20,7 +20,8 @@ enum class Block {
 	L,
 	J,
 	I,
-	Shadow
+	Shadow,
+	Dead
 };
 
 // Convert a block to its number for indexing into `constants`; return -1 if invalid
@@ -96,6 +97,9 @@ inline Color blockToColor(Block block) {
 	case Block::Shadow:
 		// Shadow
 		return { 34, 39, 61 };
+	case Block::Dead:
+		// Dead
+		return { 66, 70, 84 };
 	default:
 		// None (should not happen)
 		return { 0, 0, 0 };

@@ -43,6 +43,12 @@ public:
 			Block::I
 		};
 		// Initialize the next 2 bags' worth of pieces
+		reset();
+	}
+
+	// Reset the bag
+	void reset() {
+		nextPieces.clear();
 		addNextBag();
 		addNextBag();
 	}

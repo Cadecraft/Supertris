@@ -2,6 +2,7 @@
 
 Renderer::Renderer(sf::RenderWindow& window, AssetHandler& assetHandler) : window(window), assetHandler(assetHandler) {
 	// TODO: update defaults if needed
+	// TODO: allow config
 	blockWidth = 30;
 }
 
@@ -53,6 +54,7 @@ void Renderer::renderGame(Board& board, Piece& piece, Bag& bag, Block holdBlock,
 			// TODO: more effects
 			// Determine whether to render the piece or the existing board cell
 			Block pieceCellHere = piece.getCell(x - piece.getLocx(), y - piece.getLocy());
+			if (score.getDead() && pieceCellHere != Block::None) pieceCellHere = Block::Dead;
 			Block boardCellHere = board.getCell(x, y);
 			Block shadowCellHere = shadow.getCell(x - shadow.getLocx(), y - shadow.getLocy());
 			if (pieceCellHere != Block::None) {
@@ -123,7 +125,7 @@ void Renderer::renderGame(Board& board, Piece& piece, Bag& bag, Block holdBlock,
 			}
 		}
 	}
-	// TODO: Animations for clearing lines, placing pieces, etc.
+	// TODO: More animations for clearing lines, chains/combos/b2bs, etc
 	// TODO: UI: Show controls info
 	sf::Font& font = assetHandler.getFont();
 	renderText(

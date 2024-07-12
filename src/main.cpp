@@ -96,8 +96,12 @@ int main() {
 					//else effects.spawnBeam(piece.getLocy()); // TODO: fix to use actual line clear bottom
 					piece.respawn(bag.popNextPiece()); // TODO: refactor the lock process
 					canSwapHold = true;
-					if (!piece.isValid(board)) score.die();
-
+					if (!piece.isValid(board)) {
+						// TODO: refactor this too
+						board.die();
+						score.die();
+					}
+					autodropTimerTarget = currentTimeMs() + score.getMsPerAutolock(); // Re-update timer
 				} else {
 					// Do not lock; set the timer
 					prevAutodropShouldLock = true;
@@ -174,7 +178,12 @@ int main() {
 				//else effects.spawnBeam(piece.getLocy()); // TODO: fix to use actual line clear bottom
 				piece.respawn(bag.popNextPiece());
 				canSwapHold = true;
-				if (!piece.isValid(board)) score.die();
+				if (!piece.isValid(board)) {
+					// TODO: refactor this too
+					board.die();
+					score.die();
+				}
+				autodropTimerTarget = currentTimeMs() + score.getMsPerAutolock(); // Re-update timer
 			}
 		}
 		if (inputHandler.isActive(sf::Keyboard::Scan::S)) {
@@ -191,13 +200,20 @@ int main() {
 			//else effects.spawnBeam(piece.getLocy()); // TODO: fix to use actual line clear bottom
 			piece.respawn(bag.popNextPiece());
 			canSwapHold = true;
-			if (!piece.isValid(board)) score.die();
+			if (!piece.isValid(board)) {
+				// TODO: refactor this too
+				board.die();
+				score.die();
+			}
+			autodropTimerTarget = currentTimeMs() + score.getMsPerAutolock(); // Re-update timer
 		}
 		if (inputHandler.isActive(sf::Keyboard::Scan::R)) {
 			// Restart
 			inputHandler.addToCooldown(sf::Keyboard::Scan::R);
 			board.reset();
 			// TODO: also reset bag, piece, score, etc. (maybe just return from a new "game" function and then continue the loop?)
+			score.reset(currentTimeMs());
+			// TODO: also reset piece
 		}
 		if (inputHandler.isActive(sf::Keyboard::Scan::LShift) || inputHandler.isActive(sf::Keyboard::Scan::RShift)) {
 			// Swap the current hold piece, if possible
