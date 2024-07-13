@@ -24,6 +24,13 @@ enum class Block {
 	Dead
 };
 
+// A game return type
+enum class GameReturnType {
+	Restart,
+	Die,
+	WindowClose
+};
+
 // Convert a block to its number for indexing into `constants`; return -1 if invalid
 inline int blockToIndex(Block block) {
 	switch (block) {

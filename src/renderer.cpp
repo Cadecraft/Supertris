@@ -130,7 +130,7 @@ void Renderer::renderGame(Board& board, Piece& piece, Bag& bag, Block holdBlock,
 	sf::Font& font = assetHandler.getFont();
 	renderText(
 		board.getWidth() * blockWidth, board.getHeight() * blockWidth - 6 * blockWidth, 18,
-		{ 77, 84, 112 }, font, "R = restart\nESC = exit"
+		{ 77, 84, 112 }, font, "R = restart"
 	);
 	// Other color: { 146, 152, 176 }
 	// UI: Show current score data
@@ -150,5 +150,12 @@ void Renderer::renderGame(Board& board, Piece& piece, Bag& bag, Block holdBlock,
 	//renderText(board.getWidth() * blockWidth, board.getHeight() * blockWidth - 4 * blockWidth, 18, { 77, 84, 112 }, font, scoreString);
 	renderText(blockWidth, 10, 18, { 145, 151, 179 }, font, scoreString1);
 	renderText(blockWidth * 5, 10, 18, { 145, 151, 179 }, font, scoreString2);
+	window.display();
+}
+
+void Renderer::renderMenu() {
+	// TODO: impl
+	// Clear the bottom right part of the screen only
+	window.clear(sf::Color(19, 22, 36));
 	window.display();
 }

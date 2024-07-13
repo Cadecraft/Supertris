@@ -1,5 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <stdlib.h>
+#include <time.h>
 
 #include "constants.h"
 #include "utils.h"
@@ -24,13 +26,79 @@
 	- other?
 */
 
+int executeMenu(sf::RenderWindow& window);
+GameReturnType executeGame(sf::RenderWindow& window);
+
 // Entry point
 int main() {
 	// TODO: save window position, allow resizing in the menu
 	auto window = sf::RenderWindow{ { DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT }, "Supertris" };
 	// TODO: better framerate limit ?
 	window.setFramerateLimit(144);
+	std::srand(time(NULL));
 
+	// Start the system loop
+	while (window.isOpen()) {
+		// TODO: menus and other things
+		// Execute a round of the game
+		GameReturnType returned = executeGame(window);
+		switch (returned) {
+		case GameReturnType::Restart:
+			// Restart immediately
+			break;
+		case GameReturnType::Die:
+			// Update, render text and await input
+			executeMenu(window);
+			break;
+		case GameReturnType::WindowClose:
+			// Closed the window
+			break;
+		}
+	}
+	return 0;
+}
+
+// Collect user input in the menu
+int executeMenu(sf::RenderWindow& window) {
+	// Create menu objects
+	InputHandler inputHandler;
+	AssetHandler assetHandler;
+	Renderer renderer(window, assetHandler);
+
+	// Main input loop
+	while (window.isOpen()) {
+		// Poll events
+		for (auto event = sf::Event{}; window.pollEvent(event);) {
+			switch (event.type) {
+			case sf::Event::Closed:
+				// Close window
+				window.close();
+				break;
+			case sf::Event::KeyPressed:
+				// Key pressed
+				inputHandler.press(event.key.scancode);
+				break;
+			case sf::Event::KeyReleased:
+				// Key released
+				inputHandler.release(event.key.scancode);
+				break;
+			}
+		}
+		// Process input
+		if (inputHandler.isActive(sf::Keyboard::Scan::R)) {
+			inputHandler.addToCooldown(sf::Keyboard::Scan::R);
+			// Restart
+			return 0;
+		}
+		// Render
+		// TODO: render the menu well
+		renderer.renderMenu();
+	}
+	return 0;
+}
+
+// Execute a round of the game
+GameReturnType executeGame(sf::RenderWindow& window) {
 	// Create game objects
 	Board board;
 	Bag bag;
@@ -210,10 +278,9 @@ int main() {
 		if (inputHandler.isActive(sf::Keyboard::Scan::R)) {
 			// Restart
 			inputHandler.addToCooldown(sf::Keyboard::Scan::R);
-			board.reset();
-			// TODO: also reset bag, piece, score, etc. (maybe just return from a new "game" function and then continue the loop?)
-			score.reset(currentTimeMs());
-			// TODO: also reset piece
+			// TODO: why does the bag not fully reset sometimes?
+			// Return from the function to completely reset the game (system loop is above, in the main function)
+			return GameReturnType::Restart;
 		}
 		if (inputHandler.isActive(sf::Keyboard::Scan::LShift) || inputHandler.isActive(sf::Keyboard::Scan::RShift)) {
 			// Swap the current hold piece, if possible
@@ -232,6 +299,8 @@ int main() {
 		effects.updateByFrame();
 		// Render
 		renderer.renderGame(board, piece, bag, holdBlock, score, effects);
+		// If dead, return
+		if (score.getDead()) return GameReturnType::Die;
 	}
-	return 0;
+	return GameReturnType::WindowClose;
 }

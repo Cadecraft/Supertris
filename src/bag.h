@@ -31,7 +31,6 @@ private:
 
 public:
 	Bag() {
-		std::srand(time(NULL));
 		// Initialize all possible blocks
 		allBlocks = {
 			Block::Z,

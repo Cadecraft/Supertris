@@ -35,4 +35,7 @@ public:
 
 	// Render the entire screen
 	void renderGame(Board& board, Piece& piece, Bag& bag, Block holdBlock, Score& score, Effects& effects);
+
+	// Render the menu on the right side of the screen
+	void renderMenu();
 };
