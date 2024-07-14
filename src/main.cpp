@@ -91,7 +91,7 @@ int executeMenu(sf::RenderWindow& window, Menu menu) {
 	Renderer renderer(window, assetHandler);
 
 	// TODO: render the menu well, including the original blocks from the prior game??
-    // TODO: menu navigation, sort of recursively calling with different menus or returning
+	// TODO: menu navigation, sort of recursively calling with different menus or returning
 	renderer.renderMenu(assetHandler, menu);
 
 	// Main input loop
@@ -114,49 +114,65 @@ int executeMenu(sf::RenderWindow& window, Menu menu) {
 			}
 		}
 		// Process input based on the menu
-        switch (menu) {
-        case Menu::Title:
-            if (inputHandler.isActive(sf::Keyboard::Scan::Q) || inputHandler.isActive(sf::Keyboard::Scan::Escape)) {
-                inputHandler.addToCooldown(sf::Keyboard::Scan::Q);
-                inputHandler.addToCooldown(sf::Keyboard::Scan::Escape);
-                // Quit
-                window.close();
-                return 0;
-            } else if (inputHandler.isActive(sf::Keyboard::Scan::Num1)) {
-                inputHandler.addToCooldown(sf::Keyboard::Scan::Num1);
-                // Play
-                runGame(window);
-            } else if (inputHandler.isActive(sf::Keyboard::Scan::Num2)) {
-                inputHandler.addToCooldown(sf::Keyboard::Scan::Num2);
-                // Config
-                executeMenu(window, Menu::Config);
-            }
-            break;
-        case Menu::Config:
-            if (inputHandler.isActive(sf::Keyboard::Scan::Q) || inputHandler.isActive(sf::Keyboard::Scan::Escape)) {
-                inputHandler.addToCooldown(sf::Keyboard::Scan::Q);
-                inputHandler.addToCooldown(sf::Keyboard::Scan::Escape);
-                // Back to main menu
-                executeMenu(window, Menu::Title);
-            } else if (inputHandler.isActive(sf::Keyboard::Scan::Num1)) {
-                inputHandler.addToCooldown(sf::Keyboard::Scan::Num1);
-                // Edit the config
-                // TODO: impl
-            }
-            break;
-        case Menu::Dead:
-            if (inputHandler.isActive(sf::Keyboard::Scan::Q) || inputHandler.isActive(sf::Keyboard::Scan::Escape)) {
-                inputHandler.addToCooldown(sf::Keyboard::Scan::Q);
-                inputHandler.addToCooldown(sf::Keyboard::Scan::Escape);
-                // Back to main menu
-                executeMenu(window, Menu::Title);
-            } else if (inputHandler.isActive(sf::Keyboard::Scan::R)) {
-                inputHandler.addToCooldown(sf::Keyboard::Scan::R);
-                // Restart
-                runGame(window);
-            }
-            break;
-        }
+		switch (menu) {
+		case Menu::Title:
+			renderer.renderMenu(assetHandler, menu);
+			if (inputHandler.isActive(sf::Keyboard::Scan::Q) || inputHandler.isActive(sf::Keyboard::Scan::Escape)) {
+				inputHandler.addToCooldown(sf::Keyboard::Scan::Q);
+				inputHandler.addToCooldown(sf::Keyboard::Scan::Escape);
+				// Quit
+				window.close();
+				return 0;
+			} else if (inputHandler.isActive(sf::Keyboard::Scan::Num1)) {
+				inputHandler.addToCooldown(sf::Keyboard::Scan::Num1);
+				// Play
+				runGame(window);
+			} else if (inputHandler.isActive(sf::Keyboard::Scan::Num2)) {
+				inputHandler.addToCooldown(sf::Keyboard::Scan::Num2);
+				// Config
+				executeMenu(window, Menu::Config);
+			} else if (inputHandler.isActive(sf::Keyboard::Scan::Num3)) {
+				inputHandler.addToCooldown(sf::Keyboard::Scan::Num3);
+				// Leaderboard
+				executeMenu(window, Menu::Leaderboard);
+			}
+			break;
+		case Menu::Config:
+			renderer.renderMenu(assetHandler, menu);
+			if (inputHandler.isActive(sf::Keyboard::Scan::Q) || inputHandler.isActive(sf::Keyboard::Scan::Escape)) {
+				inputHandler.addToCooldown(sf::Keyboard::Scan::Q);
+				inputHandler.addToCooldown(sf::Keyboard::Scan::Escape);
+				// Back to main menu
+				executeMenu(window, Menu::Title);
+			} else if (inputHandler.isActive(sf::Keyboard::Scan::Num1)) {
+				inputHandler.addToCooldown(sf::Keyboard::Scan::Num1);
+				// Edit the config
+				// TODO: impl
+			}
+			break;
+		case Menu::Leaderboard:
+			renderer.renderMenu(assetHandler, menu);
+			if (inputHandler.isActive(sf::Keyboard::Scan::Q) || inputHandler.isActive(sf::Keyboard::Scan::Escape)) {
+				inputHandler.addToCooldown(sf::Keyboard::Scan::Q);
+				inputHandler.addToCooldown(sf::Keyboard::Scan::Escape);
+				// Back to main menu
+				executeMenu(window, Menu::Title);
+			}
+			// TODO: option to erase all highscores/clear the leaderboard (with a confirmation page)
+			break;
+		case Menu::Dead:
+			if (inputHandler.isActive(sf::Keyboard::Scan::Q) || inputHandler.isActive(sf::Keyboard::Scan::Escape)) {
+				inputHandler.addToCooldown(sf::Keyboard::Scan::Q);
+				inputHandler.addToCooldown(sf::Keyboard::Scan::Escape);
+				// Back to main menu
+				executeMenu(window, Menu::Title);
+			} else if (inputHandler.isActive(sf::Keyboard::Scan::R)) {
+				inputHandler.addToCooldown(sf::Keyboard::Scan::R);
+				// Restart
+				runGame(window);
+			}
+			break;
+		}
 		// TODO: render?
 	}
 	return 0;
@@ -343,7 +359,6 @@ GameReturnType executeGame(sf::RenderWindow& window) {
 		if (inputHandler.isActive(sf::Keyboard::Scan::R)) {
 			// Restart
 			inputHandler.addToCooldown(sf::Keyboard::Scan::R);
-			// TODO: why does the bag not fully reset sometimes?
 			// Return from the function to completely reset the game (system loop is above, in the main function)
 			return GameReturnType::Restart;
 		}
@@ -358,6 +373,11 @@ GameReturnType executeGame(sf::RenderWindow& window) {
 				holdBlock = piece.getPieceType();
 				piece.respawn(swapTo);
 			}
+		}
+		if (inputHandler.isActive(sf::Keyboard::Scan::Escape)) {
+			// Hold escape to quit
+			// TODO: impl
+			// TODO: display in key info menu on right side
 		}
 
 		// Update graphics

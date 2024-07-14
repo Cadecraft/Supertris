@@ -1,5 +1,8 @@
 #include "renderer.h"
 
+// TODO: remove iostream and prints (for debugging)
+#include <iostream>
+
 Renderer::Renderer(sf::RenderWindow& window, AssetHandler& assetHandler) : window(window), assetHandler(assetHandler) {
 	// TODO: update defaults if needed
 	// TODO: allow config
@@ -130,7 +133,7 @@ void Renderer::renderGame(Board& board, Piece& piece, Bag& bag, Block holdBlock,
 	sf::Font& font = assetHandler.getFont();
 	renderText(
 		board.getWidth() * blockWidth, board.getHeight() * blockWidth - 6 * blockWidth, 18,
-		{ 77, 84, 112 }, font, "R: restart"
+		{ 77, 84, 112 }, font, "[R] Restart"
 	);
 	// Other color: { 146, 152, 176 }
 	// UI: Show current score data
@@ -156,34 +159,50 @@ void Renderer::renderGame(Board& board, Piece& piece, Bag& bag, Block holdBlock,
 
 void Renderer::renderMenu(AssetHandler& assetHandler, Menu menu) {
 	// TODO: impl better
-    // Prepare to render UI
+	// Prepare to render UI
 	sf::Font& font = assetHandler.getFont();
 	// UI: Show info based on the menu
-    switch (menu) {
-        case Menu::Title:
-            // Title screen
-            window.clear(sf::Color(19, 22, 36));
-            // TODO: for title screen, display the title of the game and a demo board (create a whole fake game for the renderGame func?)
-            // TODO: moving title animation with a sine wave based on milliseconds elapsed
-            renderText((window.getSize().x) / 2 - 60, 200, 32, { 219, 70, 24 }, font, "~ SUPERTRIS ~");
-            renderText(30, window.getSize().y / 2 - 10, 18, { 145, 151, 179 }, font, "1: Start\n2: Config\n\nQ/Esc: Quit");
-            break;
-        case Menu::Config:
-            // Config screen
-            // TODO: allow config options
-            window.clear(sf::Color(19, 22, 36));
-            renderText(30, window.getSize().y / 2 - 10, 18, { 145, 151, 179 }, font, "1: Control Mode\n\nQ/Esc: Back to menu");
-            break;
-        case Menu::Dead:
-            // Dead: clear the bottom right part of the screen only
-            int menuwidth = 100;
-            int menuheight = 200;
-            int menux = window.getSize().x - menuwidth;
-            int menuy = window.getSize().y - menuheight;
-            renderRect(menux, menuy, menuwidth, menuheight, { 19, 22, 36 });
-            renderText(menux + 10, menuy + 10, 18, { 145, 151, 179 }, font, "R: Restart\n\nQ/Esc: Back to menu");
-            break;
-    }
+	std::cout << "rendering" << std::endl;
+	switch (menu) {
+	case Menu::Title:
+		// Title screen
+		window.clear(sf::Color(19, 22, 36));
+		// TODO: for title screen, display the title of the game and a demo board (create a whole fake game for the renderGame func?)
+		// TODO: moving title animation with a sine wave based on milliseconds elapsed
+		renderText(DEFAULT_WINDOW_WIDTH / 2 - 100 + (int) (sin(currentTimeMs() / 3000.0) * 10), 200 + (int) (sin(currentTimeMs() / 1000.0) * 20), 32, { 219, 70 + (int) (sin(currentTimeMs() / 2000.0) * 40), 24 }, font, "~ SUPERTRIS ~");
+		renderText(30, window.getSize().y / 2 - 10, 18, { 145, 151, 179 }, font, "[1] Start\n[2] Config\n[3] Leaderboard\n\n[Esc]/[Q] Quit");
+		break;
+	case Menu::Config:
+		// Config screen
+		// TODO: allow config options
+		window.clear(sf::Color(19, 22, 36));
+		renderText(DEFAULT_WINDOW_WIDTH / 2 - 100 + (int) (sin(currentTimeMs() / 3000.0) * 10), 200 + (int) (sin(currentTimeMs() / 1000.0) * 20), 32, { 219, 70 + (int) (sin(currentTimeMs() / 2000.0) * 40), 24 }, font, "~ SUPERTRIS ~");
+		renderText(30, window.getSize().y / 2 - 10, 18, { 145, 151, 179 }, font, "[1] Control Mode\n\n[Esc] Back to menu");
+		break;
+	case Menu::Leaderboard:
+		// Leaderboard screen
+		// TODO: allow clearing
+		// TODO: impl highscores
+		// TODO: impl display of highscores
+		window.clear(sf::Color(19, 22, 36));
+		renderText(DEFAULT_WINDOW_WIDTH / 2 - 100 + (int) (sin(currentTimeMs() / 3000.0) * 10), 200 + (int) (sin(currentTimeMs() / 1000.0) * 20), 32, { 219, 70 + (int) (sin(currentTimeMs() / 2000.0) * 40), 24 }, font, "~ SUPERTRIS ~");
+		renderText(30, window.getSize().y / 2 - 10, 18, { 145, 151, 179 }, font,
+			"Normal mode:\n  1. --EMPTY--\n  2. --EMPTY--\n  3. --EMPTY--\n  4. --EMPTY--\n\n[Esc] Back to menu"
+		);
+		break;
+	case Menu::Dead:
+		// Dead: clear the bottom right part of the screen only
+		window.display();
+		int menuwidth = 100;
+		int menuheight = 300;
+		int menux = window.getSize().x - menuwidth;
+		int menuy = window.getSize().y - menuheight;
+		renderRect(menux, menuy, menuwidth, menuheight, { 19, 22, 36 });
+		renderText(menux, menuy + 10, 18, { 145, 151, 179 }, font, "Game over!\n[R] Restart\n\n[Esc] Menu");
+		break;
+	}
+	// TODO: bottom tooltip
 	// Display
 	window.display();
+	// TODO: display twice to show the actual gray death screen, in the case of being dead
 }

@@ -19,7 +19,8 @@ This project is far from complete, and is currently mostly a concept.
 
 ## Building
 
-This project's CMakeLists was based on the [Cmake SFML Project Template](https://github.com/SFML/cmake-sfml-project). Here is how to build:
+This project's CMakeLists was based on the [Cmake SFML Project Template](https://github.com/SFML/cmake-sfml-project).
+CMake is required to build this project. Use these commands:
 
 For a single-configuration generator (typically the case on Linux and macOS):
 ```

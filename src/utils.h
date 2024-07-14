@@ -33,9 +33,10 @@ enum class GameReturnType {
 
 // Menus the user can be in
 enum class Menu {
-    Title,
-    Config,
-    Dead
+	Title,
+	Config,
+	Leaderboard,
+	Dead
 };
 
 // Convert a block to its number for indexing into `constants`; return -1 if invalid
