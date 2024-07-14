@@ -26,7 +26,7 @@
 	- other?
 */
 
-int executeMenu(sf::RenderWindow& window);
+int executeMenu(sf::RenderWindow& window, Menu menu);
 GameReturnType executeGame(sf::RenderWindow& window);
 
 // Entry point
@@ -38,8 +38,10 @@ int main() {
 	std::srand(time(NULL));
 
 	// Start the system loop
-	while (window.isOpen()) {
-		// TODO: menus and other things
+    // Initial menu execution
+    executeMenu(window, Menu::Title);
+	/*while (window.isOpen()) {
+		// TODO: better menus and other things
 		// Execute a round of the game
 		GameReturnType returned = executeGame(window);
 		switch (returned) {
@@ -48,22 +50,49 @@ int main() {
 			break;
 		case GameReturnType::Die:
 			// Update, render text and await input
-			executeMenu(window);
+			// TODO: highscore updates, display "game over", etc.
+			executeMenu(window, Menu::Dead);
 			break;
 		case GameReturnType::WindowClose:
 			// Closed the window
 			break;
 		}
-	}
+	}*/
 	return 0;
 }
 
+// Run the game and handle all menus
+int runGame(sf::RenderWindow& window) {
+    // TODO: better menus and other things
+    // Execute a round of the game
+    GameReturnType returned = executeGame(window);
+    switch (returned) {
+        case GameReturnType::Restart:
+            // Restart immediately
+            runGame(window);
+            break;
+        case GameReturnType::Die:
+            // Update, render text and await input
+            // TODO: highscore updates, display "game over", etc.
+            executeMenu(window, Menu::Dead);
+            break;
+        case GameReturnType::WindowClose:
+            // Closed the window
+            break;
+    }
+    return 0;
+}
+
 // Collect user input in the menu
-int executeMenu(sf::RenderWindow& window) {
+int executeMenu(sf::RenderWindow& window, Menu menu) {
 	// Create menu objects
 	InputHandler inputHandler;
 	AssetHandler assetHandler;
 	Renderer renderer(window, assetHandler);
+
+	// TODO: render the menu well, including the original blocks from the prior game??
+    // TODO: menu navigation, sort of recursively calling with different menus or returning
+	renderer.renderMenu(assetHandler, menu);
 
 	// Main input loop
 	while (window.isOpen()) {
@@ -84,15 +113,51 @@ int executeMenu(sf::RenderWindow& window) {
 				break;
 			}
 		}
-		// Process input
-		if (inputHandler.isActive(sf::Keyboard::Scan::R)) {
-			inputHandler.addToCooldown(sf::Keyboard::Scan::R);
-			// Restart
-			return 0;
-		}
-		// Render
-		// TODO: render the menu well
-		renderer.renderMenu();
+		// Process input based on the menu
+        switch (menu) {
+        case Menu::Title:
+            if (inputHandler.isActive(sf::Keyboard::Scan::Q) || inputHandler.isActive(sf::Keyboard::Scan::Escape)) {
+                inputHandler.addToCooldown(sf::Keyboard::Scan::Q);
+                inputHandler.addToCooldown(sf::Keyboard::Scan::Escape);
+                // Quit
+                window.close();
+                return 0;
+            } else if (inputHandler.isActive(sf::Keyboard::Scan::Num1)) {
+                inputHandler.addToCooldown(sf::Keyboard::Scan::Num1);
+                // Play
+                runGame(window);
+            } else if (inputHandler.isActive(sf::Keyboard::Scan::Num2)) {
+                inputHandler.addToCooldown(sf::Keyboard::Scan::Num2);
+                // Config
+                executeMenu(window, Menu::Config);
+            }
+            break;
+        case Menu::Config:
+            if (inputHandler.isActive(sf::Keyboard::Scan::Q) || inputHandler.isActive(sf::Keyboard::Scan::Escape)) {
+                inputHandler.addToCooldown(sf::Keyboard::Scan::Q);
+                inputHandler.addToCooldown(sf::Keyboard::Scan::Escape);
+                // Back to main menu
+                executeMenu(window, Menu::Title);
+            } else if (inputHandler.isActive(sf::Keyboard::Scan::Num1)) {
+                inputHandler.addToCooldown(sf::Keyboard::Scan::Num1);
+                // Edit the config
+                // TODO: impl
+            }
+            break;
+        case Menu::Dead:
+            if (inputHandler.isActive(sf::Keyboard::Scan::Q) || inputHandler.isActive(sf::Keyboard::Scan::Escape)) {
+                inputHandler.addToCooldown(sf::Keyboard::Scan::Q);
+                inputHandler.addToCooldown(sf::Keyboard::Scan::Escape);
+                // Back to main menu
+                executeMenu(window, Menu::Title);
+            } else if (inputHandler.isActive(sf::Keyboard::Scan::R)) {
+                inputHandler.addToCooldown(sf::Keyboard::Scan::R);
+                // Restart
+                runGame(window);
+            }
+            break;
+        }
+		// TODO: render?
 	}
 	return 0;
 }
@@ -228,7 +293,7 @@ GameReturnType executeGame(sf::RenderWindow& window) {
 		}
 		if (inputHandler.isActive(sf::Keyboard::Scan::W)) {
 			// Soft drop
-			inputHandler.addToCooldown(sf::Keyboard::Scan::W, config.getSdf()); // TODO: refactor into SDF
+			inputHandler.addToCooldown(sf::Keyboard::Scan::W, config.getSdf());
 			bool shouldLock = piece.move(0, 1, board);
 			if (config.getSdf() == 0) {
 				for (int i = 0; i < 19; i++) {
@@ -299,6 +364,7 @@ GameReturnType executeGame(sf::RenderWindow& window) {
 		effects.updateByFrame();
 		// Render
 		renderer.renderGame(board, piece, bag, holdBlock, score, effects);
+
 		// If dead, return
 		if (score.getDead()) return GameReturnType::Die;
 	}

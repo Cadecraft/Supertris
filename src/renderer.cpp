@@ -130,7 +130,7 @@ void Renderer::renderGame(Board& board, Piece& piece, Bag& bag, Block holdBlock,
 	sf::Font& font = assetHandler.getFont();
 	renderText(
 		board.getWidth() * blockWidth, board.getHeight() * blockWidth - 6 * blockWidth, 18,
-		{ 77, 84, 112 }, font, "R = restart"
+		{ 77, 84, 112 }, font, "R: restart"
 	);
 	// Other color: { 146, 152, 176 }
 	// UI: Show current score data
@@ -150,12 +150,40 @@ void Renderer::renderGame(Board& board, Piece& piece, Bag& bag, Block holdBlock,
 	//renderText(board.getWidth() * blockWidth, board.getHeight() * blockWidth - 4 * blockWidth, 18, { 77, 84, 112 }, font, scoreString);
 	renderText(blockWidth, 10, 18, { 145, 151, 179 }, font, scoreString1);
 	renderText(blockWidth * 5, 10, 18, { 145, 151, 179 }, font, scoreString2);
+	// Display
 	window.display();
 }
 
-void Renderer::renderMenu() {
-	// TODO: impl
-	// Clear the bottom right part of the screen only
-	window.clear(sf::Color(19, 22, 36));
+void Renderer::renderMenu(AssetHandler& assetHandler, Menu menu) {
+	// TODO: impl better
+    // Prepare to render UI
+	sf::Font& font = assetHandler.getFont();
+	// UI: Show info based on the menu
+    switch (menu) {
+        case Menu::Title:
+            // Title screen
+            window.clear(sf::Color(19, 22, 36));
+            // TODO: for title screen, display the title of the game and a demo board (create a whole fake game for the renderGame func?)
+            // TODO: moving title animation with a sine wave based on milliseconds elapsed
+            renderText((window.getSize().x) / 2 - 60, 200, 32, { 219, 70, 24 }, font, "~ SUPERTRIS ~");
+            renderText(30, window.getSize().y / 2 - 10, 18, { 145, 151, 179 }, font, "1: Start\n2: Config\n\nQ/Esc: Quit");
+            break;
+        case Menu::Config:
+            // Config screen
+            // TODO: allow config options
+            window.clear(sf::Color(19, 22, 36));
+            renderText(30, window.getSize().y / 2 - 10, 18, { 145, 151, 179 }, font, "1: Control Mode\n\nQ/Esc: Back to menu");
+            break;
+        case Menu::Dead:
+            // Dead: clear the bottom right part of the screen only
+            int menuwidth = 100;
+            int menuheight = 200;
+            int menux = window.getSize().x - menuwidth;
+            int menuy = window.getSize().y - menuheight;
+            renderRect(menux, menuy, menuwidth, menuheight, { 19, 22, 36 });
+            renderText(menux + 10, menuy + 10, 18, { 145, 151, 179 }, font, "R: Restart\n\nQ/Esc: Back to menu");
+            break;
+    }
+	// Display
 	window.display();
 }
