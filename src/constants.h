@@ -7,6 +7,7 @@
 // System constants
 const std::string RECENT_VERSION = "0.5.0";
 const std::string EDIT_DATE = "2024/07/06";
+const std::string CONFIG_FILENAME = "userconfig.txt";
 
 // Rendering constants
 const unsigned int DEFAULT_WINDOW_WIDTH = 400; // 300

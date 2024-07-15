@@ -1,8 +1,5 @@
 #include "renderer.h"
 
-// TODO: remove iostream and prints (for debugging)
-#include <iostream>
-
 Renderer::Renderer(sf::RenderWindow& window, AssetHandler& assetHandler) : window(window), assetHandler(assetHandler) {
 	// TODO: update defaults if needed
 	// TODO: allow config
@@ -49,7 +46,7 @@ void Renderer::renderGame(Board& board, Piece& piece, Bag& bag, Block holdBlock,
 	// Clear
 	window.clear(sf::Color(19, 22, 36));
 	// Render the board
-	// TODO: special graphics effects (static 'noise', some cells are slightly darker than others, darker cell "gradients"/borders rendered via colors rather than images, non-intrusive line clearing fx, glitter/shine, etc.)
+	// TODO: special graphics effects (static 'noise', some cells should be slightly darker than others, darker cell "gradients"/borders rendered via colors rather than images, non-intrusive line clearing fx, glitter/shine, etc.)
 	int boardOffsety = blockWidth * 2;
 	for (int y = 0; y < board.getHeight(); y++) {
 		for (int x = 0; x < board.getWidth(); x++) {
@@ -162,7 +159,6 @@ void Renderer::renderMenu(AssetHandler& assetHandler, Menu menu) {
 	// Prepare to render UI
 	sf::Font& font = assetHandler.getFont();
 	// UI: Show info based on the menu
-	std::cout << "rendering" << std::endl;
 	switch (menu) {
 	case Menu::Title:
 		// Title screen

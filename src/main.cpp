@@ -26,8 +26,8 @@
 	- other?
 */
 
-int executeMenu(sf::RenderWindow& window, Menu menu);
-GameReturnType executeGame(sf::RenderWindow& window);
+int executeMenu(sf::RenderWindow& window, Menu menu, Config& config);
+GameReturnType executeGame(sf::RenderWindow& window, Config& config);
 
 // Entry point
 int main() {
@@ -38,43 +38,27 @@ int main() {
 	std::srand(time(NULL));
 
 	// Start the system loop
-    // Initial menu execution
-    executeMenu(window, Menu::Title);
-	/*while (window.isOpen()) {
-		// TODO: better menus and other things
-		// Execute a round of the game
-		GameReturnType returned = executeGame(window);
-		switch (returned) {
-		case GameReturnType::Restart:
-			// Restart immediately
-			break;
-		case GameReturnType::Die:
-			// Update, render text and await input
-			// TODO: highscore updates, display "game over", etc.
-			executeMenu(window, Menu::Dead);
-			break;
-		case GameReturnType::WindowClose:
-			// Closed the window
-			break;
-		}
-	}*/
+	// Initial menu execution
+	Config config;
+	executeMenu(window, Menu::Title, config);
+	// Finished
 	return 0;
 }
 
 // Run the game and handle all menus
-int runGame(sf::RenderWindow& window) {
+int runGame(sf::RenderWindow& window, Config& config) {
     // TODO: better menus and other things
     // Execute a round of the game
-    GameReturnType returned = executeGame(window);
+    GameReturnType returned = executeGame(window, config);
     switch (returned) {
         case GameReturnType::Restart:
             // Restart immediately
-            runGame(window);
+            runGame(window, config);
             break;
         case GameReturnType::Die:
             // Update, render text and await input
             // TODO: highscore updates, display "game over", etc.
-            executeMenu(window, Menu::Dead);
+            executeMenu(window, Menu::Dead, config);
             break;
         case GameReturnType::WindowClose:
             // Closed the window
@@ -84,7 +68,7 @@ int runGame(sf::RenderWindow& window) {
 }
 
 // Collect user input in the menu
-int executeMenu(sf::RenderWindow& window, Menu menu) {
+int executeMenu(sf::RenderWindow& window, Menu menu, Config& config) {
 	// Create menu objects
 	InputHandler inputHandler;
 	AssetHandler assetHandler;
@@ -126,15 +110,15 @@ int executeMenu(sf::RenderWindow& window, Menu menu) {
 			} else if (inputHandler.isActive(sf::Keyboard::Scan::Num1)) {
 				inputHandler.addToCooldown(sf::Keyboard::Scan::Num1);
 				// Play
-				runGame(window);
+				runGame(window, config);
 			} else if (inputHandler.isActive(sf::Keyboard::Scan::Num2)) {
 				inputHandler.addToCooldown(sf::Keyboard::Scan::Num2);
 				// Config
-				executeMenu(window, Menu::Config);
+				executeMenu(window, Menu::Config, config);
 			} else if (inputHandler.isActive(sf::Keyboard::Scan::Num3)) {
 				inputHandler.addToCooldown(sf::Keyboard::Scan::Num3);
 				// Leaderboard
-				executeMenu(window, Menu::Leaderboard);
+				executeMenu(window, Menu::Leaderboard, config);
 			}
 			break;
 		case Menu::Config:
@@ -143,7 +127,7 @@ int executeMenu(sf::RenderWindow& window, Menu menu) {
 				inputHandler.addToCooldown(sf::Keyboard::Scan::Q);
 				inputHandler.addToCooldown(sf::Keyboard::Scan::Escape);
 				// Back to main menu
-				executeMenu(window, Menu::Title);
+				executeMenu(window, Menu::Title, config);
 			} else if (inputHandler.isActive(sf::Keyboard::Scan::Num1)) {
 				inputHandler.addToCooldown(sf::Keyboard::Scan::Num1);
 				// Edit the config
@@ -156,7 +140,7 @@ int executeMenu(sf::RenderWindow& window, Menu menu) {
 				inputHandler.addToCooldown(sf::Keyboard::Scan::Q);
 				inputHandler.addToCooldown(sf::Keyboard::Scan::Escape);
 				// Back to main menu
-				executeMenu(window, Menu::Title);
+				executeMenu(window, Menu::Title, config);
 			}
 			// TODO: option to erase all highscores/clear the leaderboard (with a confirmation page)
 			break;
@@ -165,11 +149,11 @@ int executeMenu(sf::RenderWindow& window, Menu menu) {
 				inputHandler.addToCooldown(sf::Keyboard::Scan::Q);
 				inputHandler.addToCooldown(sf::Keyboard::Scan::Escape);
 				// Back to main menu
-				executeMenu(window, Menu::Title);
+				executeMenu(window, Menu::Title, config);
 			} else if (inputHandler.isActive(sf::Keyboard::Scan::R)) {
 				inputHandler.addToCooldown(sf::Keyboard::Scan::R);
 				// Restart
-				runGame(window);
+				runGame(window, config);
 			}
 			break;
 		}
@@ -179,7 +163,7 @@ int executeMenu(sf::RenderWindow& window, Menu menu) {
 }
 
 // Execute a round of the game
-GameReturnType executeGame(sf::RenderWindow& window) {
+GameReturnType executeGame(sf::RenderWindow& window, Config& config) {
 	// Create game objects
 	Board board;
 	Bag bag;
@@ -189,7 +173,6 @@ GameReturnType executeGame(sf::RenderWindow& window) {
 	Renderer renderer(window, assetHandler);
 	Score score(currentTimeMs());
 	Block holdBlock = Block::None;
-	Config config;
 	Effects effects;
 	effects.resetByBoard(board); // TODO: refactor?
 	bool canSwapHold = true; // TODO: refactor better for when piece locks, update when game is reset
@@ -334,6 +317,7 @@ GameReturnType executeGame(sf::RenderWindow& window) {
 				}
 				autodropTimerTarget = currentTimeMs() + score.getMsPerAutolock(); // Re-update timer
 			}
+			// TODO: sometimes soft drop pauses weirdly if SDF is not set to 0
 		}
 		if (inputHandler.isActive(sf::Keyboard::Scan::S)) {
 			// Hard drop
