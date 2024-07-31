@@ -6,6 +6,7 @@
 
 #include "constants.h"
 #include "utils.h"
+#include "config.h"
 #include "bag.h"
 #include "board.h"
 #include "piece.h"
@@ -37,5 +38,5 @@ public:
 	void renderGame(Board& board, Piece& piece, Bag& bag, Block holdBlock, Score& score, Effects& effects);
 
 	// Render the menu on the right side of the screen
-	void renderMenu(AssetHandler& assetHandler, Menu menu);
+	void renderMenu(AssetHandler& assetHandler, Menu menu, Config& config);
 };

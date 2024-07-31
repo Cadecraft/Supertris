@@ -24,6 +24,7 @@
 	- UI system with config, game modes, etc.
 	- click-based button UI as well as keyboard-based number UI
 	- other?
+	- release build: don't display console
 */
 
 int executeMenu(sf::RenderWindow& window, Menu menu, Config& config);
@@ -76,7 +77,7 @@ int executeMenu(sf::RenderWindow& window, Menu menu, Config& config) {
 
 	// TODO: render the menu well, including the original blocks from the prior game??
 	// TODO: menu navigation, sort of recursively calling with different menus or returning
-	renderer.renderMenu(assetHandler, menu);
+	renderer.renderMenu(assetHandler, menu, config);
 
 	// Main input loop
 	while (window.isOpen()) {
@@ -100,7 +101,7 @@ int executeMenu(sf::RenderWindow& window, Menu menu, Config& config) {
 		// Process input based on the menu
 		switch (menu) {
 		case Menu::Title:
-			renderer.renderMenu(assetHandler, menu);
+			renderer.renderMenu(assetHandler, menu, config);
 			if (inputHandler.isActive(sf::Keyboard::Scan::Q) || inputHandler.isActive(sf::Keyboard::Scan::Escape)) {
 				inputHandler.addToCooldown(sf::Keyboard::Scan::Q);
 				inputHandler.addToCooldown(sf::Keyboard::Scan::Escape);
@@ -122,7 +123,13 @@ int executeMenu(sf::RenderWindow& window, Menu menu, Config& config) {
 			}
 			break;
 		case Menu::Config:
-			renderer.renderMenu(assetHandler, menu);
+			renderer.renderMenu(assetHandler, menu, config);
+			/*
+				1) Control mode
+				2) ARR
+				3) DAS
+				4) SDF
+			*/
 			if (inputHandler.isActive(sf::Keyboard::Scan::Q) || inputHandler.isActive(sf::Keyboard::Scan::Escape)) {
 				inputHandler.addToCooldown(sf::Keyboard::Scan::Q);
 				inputHandler.addToCooldown(sf::Keyboard::Scan::Escape);
@@ -135,7 +142,7 @@ int executeMenu(sf::RenderWindow& window, Menu menu, Config& config) {
 			}
 			break;
 		case Menu::Leaderboard:
-			renderer.renderMenu(assetHandler, menu);
+			renderer.renderMenu(assetHandler, menu, config);
 			if (inputHandler.isActive(sf::Keyboard::Scan::Q) || inputHandler.isActive(sf::Keyboard::Scan::Escape)) {
 				inputHandler.addToCooldown(sf::Keyboard::Scan::Q);
 				inputHandler.addToCooldown(sf::Keyboard::Scan::Escape);

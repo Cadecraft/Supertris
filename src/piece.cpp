@@ -122,7 +122,7 @@ void Piece::updateBlockMap() {
 void Piece::respawn(Block newType) {
 	pieceType = newType;
 	locx = 3; // TODO: correct coordinates?
-	locy = 1;
+	locy = 0;
 	rotationFrame = 0;
 	updateBlockMap();
 }

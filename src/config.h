@@ -13,6 +13,9 @@ private:
 	int arr; // Auto repeat rate, in milliseconds
 	int das; // Delay auto shift, in milliseconds
 	int sdf; // Soft drop factor, in milliseconds
+    int arr_max = 1000;
+    int das_max = 1000;
+    int sdf_max = 1000;
 
 public:
 	// Create the default config
@@ -125,6 +128,33 @@ public:
 
 	// Get the soft drop factor in milliseconds
 	int getSdf() {
+		return sdf;
+	}
+
+	// Change the auto repeat rate in milliseconds, save, and return the new value
+	int changeArr(int delta) {
+		arr += delta;
+		if (arr > arr_max) arr = 0;
+		if (arr < 0) arr = arr_max;
+		save(CONFIG_FILENAME);
+		return arr;
+	}
+
+	// Change the delay auto shift in milliseconds, save, and return the new value
+	int changeDas(int delta) {
+		das += delta;
+		if (das > das_max) das = 0;
+		if (das < 0) das = das_max;
+		save(CONFIG_FILENAME);
+		return das;
+	}
+
+	// Change the soft drop factor in milliseconds, save, and return the new value
+	int changeSdf(int delta) {
+		sdf += delta;
+		if (sdf > sdf_max) sdf = 0;
+		if (sdf < 0) sdf = sdf_max;
+		save(CONFIG_FILENAME);
 		return sdf;
 	}
 };

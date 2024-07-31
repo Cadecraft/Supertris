@@ -154,7 +154,7 @@ void Renderer::renderGame(Board& board, Piece& piece, Bag& bag, Block holdBlock,
 	window.display();
 }
 
-void Renderer::renderMenu(AssetHandler& assetHandler, Menu menu) {
+void Renderer::renderMenu(AssetHandler& assetHandler, Menu menu, Config& config) {
 	// TODO: impl better
 	// Prepare to render UI
 	sf::Font& font = assetHandler.getFont();
@@ -168,13 +168,19 @@ void Renderer::renderMenu(AssetHandler& assetHandler, Menu menu) {
 		renderText(DEFAULT_WINDOW_WIDTH / 2 - 100 + (int) (sin(currentTimeMs() / 3000.0) * 10), 200 + (int) (sin(currentTimeMs() / 1000.0) * 20), 32, { 219, 70 + (int) (sin(currentTimeMs() / 2000.0) * 40), 24 }, font, "~ SUPERTRIS ~");
 		renderText(30, window.getSize().y / 2 - 10, 18, { 145, 151, 179 }, font, "[1] Start\n[2] Config\n[3] Leaderboard\n\n[Esc]/[Q] Quit");
 		break;
-	case Menu::Config:
+	case Menu::Config: {
 		// Config screen
 		// TODO: allow config options
 		window.clear(sf::Color(19, 22, 36));
 		renderText(DEFAULT_WINDOW_WIDTH / 2 - 100 + (int) (sin(currentTimeMs() / 3000.0) * 10), 200 + (int) (sin(currentTimeMs() / 1000.0) * 20), 32, { 219, 70 + (int) (sin(currentTimeMs() / 2000.0) * 40), 24 }, font, "~ SUPERTRIS ~");
-		renderText(30, window.getSize().y / 2 - 10, 18, { 145, 151, 179 }, font, "[1] Control Mode\n\n[Esc] Back to menu");
+		std::string toDisplay = "[1] Control Mode\n";
+		toDisplay += "[2] ARR = " + std::to_string(config.getArr()) + "\n";
+		toDisplay += "[3] DAS = " + std::to_string(config.getDas()) + "\n";
+		toDisplay += "[4] SDF = " + std::to_string(config.getSdf()) + "\n";
+		toDisplay += "\n[Esc] Back to menu";
+		renderText(30, window.getSize().y / 2 - 10, 18, { 145, 151, 179 }, font, toDisplay);
 		break;
+	}
 	case Menu::Leaderboard:
 		// Leaderboard screen
 		// TODO: allow clearing
