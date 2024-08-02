@@ -137,6 +137,15 @@ int executeMenu(sf::RenderWindow& window, Menu menu, Config& config) {
 				executeMenu(window, Menu::Title, config);
 			} else if (inputHandler.isActive(sf::Keyboard::Scan::Num1)) {
 				inputHandler.addToCooldown(sf::Keyboard::Scan::Num1);
+				// TODO: impl
+			} else if (inputHandler.isActive(sf::Keyboard::Scan::Num2)) {
+				inputHandler.addToCooldown(sf::Keyboard::Scan::Num2);
+				// TODO: impl
+			} else if (inputHandler.isActive(sf::Keyboard::Scan::Num3)) {
+				inputHandler.addToCooldown(sf::Keyboard::Scan::Num3);
+				// TODO: impl
+			} else if (inputHandler.isActive(sf::Keyboard::Scan::Num4)) {
+				inputHandler.addToCooldown(sf::Keyboard::Scan::Num4);
 				// Edit the config
 				// TODO: impl
 			}
