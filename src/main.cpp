@@ -123,34 +123,34 @@ int executeMenu(sf::RenderWindow& window, Menu menu, Config& config) {
 			}
 			break;
 		case Menu::Config:
-			renderer.renderMenu(assetHandler, menu, config);
-			/*
-				1) Control mode
-				2) ARR
-				3) DAS
-				4) SDF
-			*/
-			if (inputHandler.isActive(sf::Keyboard::Scan::Q) || inputHandler.isActive(sf::Keyboard::Scan::Escape)) {
-				inputHandler.addToCooldown(sf::Keyboard::Scan::Q);
-				inputHandler.addToCooldown(sf::Keyboard::Scan::Escape);
-				// Back to main menu
-				executeMenu(window, Menu::Title, config);
-			} else if (inputHandler.isActive(sf::Keyboard::Scan::Num1)) {
-				inputHandler.addToCooldown(sf::Keyboard::Scan::Num1);
-				// TODO: impl
-			} else if (inputHandler.isActive(sf::Keyboard::Scan::Num2)) {
-				inputHandler.addToCooldown(sf::Keyboard::Scan::Num2);
-				// TODO: impl
-			} else if (inputHandler.isActive(sf::Keyboard::Scan::Num3)) {
-				inputHandler.addToCooldown(sf::Keyboard::Scan::Num3);
-				// TODO: impl
-			} else if (inputHandler.isActive(sf::Keyboard::Scan::Num4)) {
-				inputHandler.addToCooldown(sf::Keyboard::Scan::Num4);
-				// Edit the config
-				// TODO: impl
-			}
-			break;
-		case Menu::Leaderboard:
+            renderer.renderMenu(assetHandler, menu, config);
+            /*
+               1) Control mode
+               2) ARR
+               3) DAS
+               4) SDF
+             */
+            if (inputHandler.isActive(sf::Keyboard::Scan::Q) || inputHandler.isActive(sf::Keyboard::Scan::Escape)) {
+                inputHandler.addToCooldown(sf::Keyboard::Scan::Q);
+                inputHandler.addToCooldown(sf::Keyboard::Scan::Escape);
+                // Back to main menu
+                executeMenu(window, Menu::Title, config);
+            } else if (inputHandler.isActive(sf::Keyboard::Scan::Num1)) {
+                inputHandler.addToCooldown(sf::Keyboard::Scan::Num1);
+                // TODO: impl control mode switch
+            } else if (inputHandler.isActive(sf::Keyboard::Scan::Num2)) {
+                inputHandler.addToCooldown(sf::Keyboard::Scan::Num2);
+                config.changeArr(20);
+            } else if (inputHandler.isActive(sf::Keyboard::Scan::Num3)) {
+                inputHandler.addToCooldown(sf::Keyboard::Scan::Num3);
+                config.changeDas(20);
+            } else if (inputHandler.isActive(sf::Keyboard::Scan::Num4)) {
+                inputHandler.addToCooldown(sf::Keyboard::Scan::Num4);
+                config.changeSdf(20);
+            }
+            // TODO: simpler
+            break;
+        case Menu::Leaderboard:
 			renderer.renderMenu(assetHandler, menu, config);
 			if (inputHandler.isActive(sf::Keyboard::Scan::Q) || inputHandler.isActive(sf::Keyboard::Scan::Escape)) {
 				inputHandler.addToCooldown(sf::Keyboard::Scan::Q);

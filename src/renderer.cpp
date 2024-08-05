@@ -172,9 +172,10 @@ void Renderer::renderMenu(AssetHandler& assetHandler, Menu menu, Config& config)
 		// Config screen
 		// TODO: allow config options
 		window.clear(sf::Color(19, 22, 36));
-		renderText(DEFAULT_WINDOW_WIDTH / 2 - 100 + (int) (sin(currentTimeMs() / 3000.0) * 10), 200 + (int) (sin(currentTimeMs() / 1000.0) * 20), 32, { 219, 70 + (int) (sin(currentTimeMs() / 2000.0) * 40), 24 }, font, "~ SUPERTRIS ~");
-		std::string toDisplay = "[1] Control Mode\n";
-		toDisplay += "[2] ARR = " + std::to_string(config.getArr()) + "\n";
+        renderText(DEFAULT_WINDOW_WIDTH / 2 - 100 + (int) (sin(currentTimeMs() / 3000.0) * 10), 200 + (int) (sin(currentTimeMs() / 1000.0) * 20), 32, { 219, 70 + (int) (sin(currentTimeMs() / 2000.0) * 40), 24 }, font, "~ SUPERTRIS ~");
+        std::string toDisplay = "Config values are between 0 to 1000 ms\n";
+        toDisplay += "[1] Control Mode\n";
+        toDisplay += "[2] ARR = " + std::to_string(config.getArr()) + "\n";
 		toDisplay += "[3] DAS = " + std::to_string(config.getDas()) + "\n";
 		toDisplay += "[4] SDF = " + std::to_string(config.getSdf()) + "\n";
 		toDisplay += "\n[Esc] Back to menu";
